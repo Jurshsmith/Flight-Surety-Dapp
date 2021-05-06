@@ -1,6 +1,14 @@
 # FlightSurety
 
-FlightSurety is a Dapp that helps predict flight related events.
+FlightSurety is a Dapp that helps manage flight delay insurance for passengers.
+
+# Major Goals
+
+- Overall, manage delay insurance for passengers
+- Managed as a collaboration between multiple airlines. This dapp should make be able to co-ordinate the flights and provide data for multiple airlines ?!
+- Give ability for passengers to purchase the FlightSurety Insurance prior to a Flight
+- If the flight is delayed due to airline fault (provided by Oracle), passengers are paid 1.5X(arbitrary number) the amount they paid for the insurance.
+- Oracle provides all the flight statuses of the airlines (Could be an open API too)
 
 ## Install
 
