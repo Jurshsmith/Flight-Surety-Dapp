@@ -10,6 +10,18 @@ FlightSurety is a Dapp that helps manage flight delay insurance for passengers.
 - If the flight is delayed due to airline fault (provided by Oracle), passengers are paid 1.5X(arbitrary number) the amount they paid for the insurance.
 - Oracle provides all the flight statuses of the airlines (Could be an open API too)
 
+## Technical Paradigms For This Project
+
+- Separation of Concerns
+- Airlines
+- Passengers
+- Oracles
+- General
+
+## High Level Systems Architecture
+
+![High Level Systems Architecture](image-docs/high-level-systems-architecture.png)
+
 ## Install
 
 This repository contains Smart Contract code in Solidity (using Truffle), tests (also using Truffle), dApp scaffolding (using HTML, CSS and JS) and server app scaffolding.
