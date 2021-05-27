@@ -13,10 +13,8 @@ FlightSurety is a Dapp that helps manage flight delay insurance for passengers.
 ## Technical Paradigms For This Project
 
 - Separation of Concerns
-- Airlines
-- Passengers
-- Oracles
-- General
+- SHA-3 Hashing
+- Event Driven Data Share
 
 ## High Level Systems Architecture
 
