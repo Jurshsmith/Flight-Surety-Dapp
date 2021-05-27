@@ -109,10 +109,11 @@ contract FlightSuretyApp {
         // Generate a unique key for storing the request
         bytes32 key =
             keccak256(abi.encodePacked(index, airline, flight, timestamp));
-        oracleResponses[key] = ResponseInfo({
-            requester: msg.sender,
-            isOpen: true
-        });
+
+        // oracleResponses[key] = ResponseInfo({
+        //     requester: msg.sender,
+        //     isOpen: true
+        // });
 
         emit OracleRequest(index, airline, flight, timestamp);
     }
@@ -127,27 +128,6 @@ contract FlightSuretyApp {
 
     // Number of oracles that must respond for valid status
     uint256 private constant MIN_RESPONSES = 3;
-
-    struct Oracle {
-        bool isRegistered;
-        uint8[3] indexes;
-    }
-
-    // Track all registered oracles
-    mapping(address => Oracle) private oracles;
-
-    // Model for responses from oracles
-    struct ResponseInfo {
-        address requester; // Account that requested status
-        bool isOpen; // If open, oracle responses are accepted
-        mapping(uint8 => address[]) responses; // Mapping key is the status code reported
-        // This lets us group responses and identify
-        // the response that majority of the oracles
-    }
-
-    // Track all oracle responses
-    // Key = hash(index, flight, timestamp)
-    mapping(bytes32 => ResponseInfo) private oracleResponses;
 
     // Event fired each time an oracle submits a response
     event FlightStatusInfo(
@@ -181,7 +161,7 @@ contract FlightSuretyApp {
 
         uint8[3] memory indexes = generateIndexes(msg.sender);
 
-        oracles[msg.sender] = Oracle({isRegistered: true, indexes: indexes});
+        // oracles[msg.sender] = Oracle({isRegistered: true, indexes: indexes});
     }
 
     // Returns array of three non-duplicating integers from 0-9
@@ -226,13 +206,9 @@ contract FlightSuretyApp {
         return random;
     }
 
-    function getMyIndexes() external view returns (uint8[3]) {
-        require(
-            oracles[msg.sender].isRegistered,
-            "Not registered as an oracle"
-        );
-
-        return oracles[msg.sender].indexes;
+    function getMyIndexes() external view // returns (uint8[3])
+    {
+        // call FlightData to get this data
     }
 
     // Called by oracle when a response is available to an outstanding request
@@ -246,27 +222,28 @@ contract FlightSuretyApp {
         uint256 timestamp,
         uint8 statusCode
     ) external {
-        require(
-            (oracles[msg.sender].indexes[0] == index) ||
-                (oracles[msg.sender].indexes[1] == index) ||
-                (oracles[msg.sender].indexes[2] == index),
-            "Index does not match oracle request"
-        );
+        // require(
+        //     (oracles[msg.sender].indexes[0] == index) ||
+        //         (oracles[msg.sender].indexes[1] == index) ||
+        //         (oracles[msg.sender].indexes[2] == index),
+        //     "Index does not match oracle request"
+        // );
 
-        bytes32 key =
-            keccak256(abi.encodePacked(index, airline, flight, timestamp));
-        require(
-            oracleResponses[key].isOpen,
-            "Flight or timestamp do not match oracle request"
-        );
+        // bytes32 key =
+        //     keccak256(abi.encodePacked(index, airline, flight, timestamp));
+        // require(
+        //     oracleResponses[key].isOpen,
+        //     "Flight or timestamp do not match oracle request"
+        // );
 
-        oracleResponses[key].responses[statusCode].push(msg.sender);
+        // oracleResponses[key].responses[statusCode].push(msg.sender);
 
         // Information isn't considered verified until at least MIN_RESPONSES
         // oracles respond with the *** same *** information
         emit OracleReport(airline, flight, timestamp, statusCode);
         if (
-            oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES
+            false
+            // oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES
         ) {
             emit FlightStatusInfo(airline, flight, timestamp, statusCode);
 
