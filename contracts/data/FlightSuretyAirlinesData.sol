@@ -7,7 +7,7 @@ import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 // The data should be like you are designing a database. It's designed as a persisting layer
 // use enum in place of string
 //Storage, Memory, stack is the place where the variable is stored, Local/State defines both scope and the place in solidity
-contract FlightSuretyAirlines is FlightSuretyAccessControl {
+contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
     using SafeMath for uint256;
 
     struct PreRegisteredAirline {
@@ -25,7 +25,7 @@ contract FlightSuretyAirlines is FlightSuretyAccessControl {
     int256 preRegisteredAirlinesLength = 0;
 
     constructor() public {
-        registeredAirlines[msg.sender] = RegisteredAirline(0);
+        registeredAirlines[msg.sender] = RegisteredAirline(0); //TODO
         registeredAirlinesLength++;
     }
 

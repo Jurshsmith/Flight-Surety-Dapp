@@ -1,6 +1,6 @@
 pragma solidity ^0.4.25;
 
-contract FlightSuretyAccessControl {
+contract FlightSuretyAppAccessControl {
     address private contractOwner; // Account used to deploy contract
     mapping(address => bool) private authorizedAddresses; // Used to determine who can CRUD the persistance layer of the DApp
     bool private operational = true; // Blocks all state changes throughout the contract if false
@@ -50,7 +50,7 @@ contract FlightSuretyAccessControl {
     }
 
     function authorizeAddress(address addressToAuthorize)
-        external
+        public
         requireContractOwner
         requireIsOperational
     {

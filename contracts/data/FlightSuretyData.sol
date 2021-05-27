@@ -1,8 +1,8 @@
 pragma solidity ^0.4.25;
 
-import "./FlightSuretyAirlines.sol";
+import "./FlightSuretyAirlinesData.sol";
 
-contract FlightSuretyData is FlightSuretyAirlines {
+contract FlightSuretyData is FlightSuretyAirlinesData {
     /**
      * @dev Add an airline to the registration queue
      *      Can only be called from FlightSuretyApp contract
