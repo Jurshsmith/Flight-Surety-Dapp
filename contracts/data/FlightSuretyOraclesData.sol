@@ -1,6 +1,8 @@
 pragma solidity ^0.4.25;
 
-contract FlightSuretyOraclesData {
+import "./FlightSuretyAccessControl.sol";
+
+contract FlightSuretyOraclesData is FlightSuretyAccessControl {
     struct Oracle {
         bool isRegistered;
         uint8[3] indexes;
@@ -23,7 +25,11 @@ contract FlightSuretyOraclesData {
     mapping(bytes32 => ResponseInfo) private oracleResponses;
 
     // Register an oracle with the contract
-    function registerOracle(uint8[3] indexes) external {
+    function registerOracle(uint8[3] indexes)
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+    {
         oracles[msg.sender] = Oracle({isRegistered: true, indexes: indexes});
     }
 
@@ -55,7 +61,7 @@ contract FlightSuretyOraclesData {
         string flight,
         uint256 timestamp,
         uint8 statusCode
-    ) external {
+    ) external requireAuthorizedAddress requireIsOperational {
         requireRegisteredOracle(oracleAddress);
         requireOracleWithPreferredIndex(index);
         bytes32 key =

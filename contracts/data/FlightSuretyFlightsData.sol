@@ -1,12 +1,15 @@
 pragma solidity ^0.4.25;
 
-contract FlightSuretyFlightData {
+import "./FlightSuretyAccessControl.sol";
+
+contract FlightSuretyFlightData is FlightSuretyAccessControl {
     struct Flight {
         bool isRegistered;
         bytes32 flight;
         address airline;
         int8 statusCode;
         uint256 updatedTimestamp;
+        mapping(address => uint256) passengers;
     }
     mapping(bytes32 => Flight) public flights;
 
@@ -19,7 +22,12 @@ contract FlightSuretyFlightData {
      * @dev Register a future flight for insuring.
      *
      */
-    function registerFlight(bytes32 flight) external returns (bytes32) {
+    function registerFlight(bytes32 flight)
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+        returns (bytes32)
+    {
         bytes32 flightKey = getFlightKey(msg.sender, flight, now);
         flights[flightKey] = Flight(true, flight, msg.sender, 0, now);
         return flightKey;

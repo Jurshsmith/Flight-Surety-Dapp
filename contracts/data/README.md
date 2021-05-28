@@ -1,7 +1,9 @@
-### Dependencies
+### Dependency Graph
 
 #### C3_Linearization
 
-- FlightSuretyAirlines (depends on) -> FlightSuretyAccessControl & SafeMath
-- FlightSuretyCustomers should -> FlightSuretyAccessControl & SafeMath
-- FlightSuretyData -> FlightSuretyAirlines & FlightSuretyCustomers
+- FlightSuretyAirlinesData (inherits) -> FlightSuretyAccessControl
+- FlightSuretyFlightsData (inherits) -> FlightSuretyAccessControl
+- FlightSuretyOraclesData (inherits) -> FlightSuretyAccessControl
+- FlightSuretyPassengersData (inherits) -> FlightSuretyAccessControl
+- FlightSuretyData -> FlightSuretyAirlinesData, FlightSuretyFlightsData, FlightSuretyOraclesData, FlightSuretyPassengersData

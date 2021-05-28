@@ -24,8 +24,8 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
     mapping(address => PreRegisteredAirline) preRegisteredAirlines;
     int256 preRegisteredAirlinesLength = 0;
 
-    constructor() public {
-        registeredAirlines[msg.sender] = RegisteredAirline(0); //TODO
+    constructor(address firstAirline) public {
+        registeredAirlines[firstAirline] = RegisteredAirline(0);
         registeredAirlinesLength++;
     }
 

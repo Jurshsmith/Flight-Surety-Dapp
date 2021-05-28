@@ -2,9 +2,9 @@ pragma solidity ^0.4.25;
 
 contract FlightSuretyPassengersData {
     struct Passenger {
-        // mapping(address => Flight) Flight;
+        mapping(bytes32 => uint256) flights; // flightKey -> amountPaidToInsure
         uint256 balance;
     }
 
-    mapping(address => Passenger) Passengers;
+    mapping(address => Passenger) passengers;
 }
