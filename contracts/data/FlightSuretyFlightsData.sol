@@ -13,11 +13,6 @@ contract FlightSuretyFlightsData is FlightSuretyAccessControl {
     }
     mapping(bytes32 => Flight) public flights;
 
-    struct FlightInsurance {
-        mapping(address => Flight) flights;
-        uint256 amountInsured;
-    }
-
     /**
      * @dev Register a future flight for insuring.
      *

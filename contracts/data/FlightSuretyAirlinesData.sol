@@ -29,6 +29,11 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
         registeredAirlinesLength++;
     }
 
+    /**
+     * @dev Add an airline to the registration queue
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function registerAirline(address airline)
         external
         requireAuthorizedAddress
