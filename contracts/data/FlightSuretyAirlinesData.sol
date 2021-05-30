@@ -1,7 +1,7 @@
 pragma solidity ^0.4.25;
 
 import "./FlightSuretyAccessControl.sol";
-import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 // Lessons
 // The data should be like you are designing a database. It's designed as a persisting layer
