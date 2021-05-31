@@ -1,8 +1,8 @@
 pragma solidity ^0.4.25;
 
-import "./FlightSuretyAccessControl.sol";
+import "./FlightSuretyDataAccessControl.sol";
 
-contract FlightSuretyFlightsData is FlightSuretyAccessControl {
+contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
     struct Flight {
         bool isRegistered;
         bytes32 flight;

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.25;
 
-import "./FlightSuretyAccessControl.sol";
+import "./FlightSuretyDataAccessControl.sol";
 
-contract FlightSuretyOraclesData is FlightSuretyAccessControl {
+contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
     struct Oracle {
         bool isRegistered;
         uint8[3] indexes;

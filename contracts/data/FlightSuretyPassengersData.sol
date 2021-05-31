@@ -1,9 +1,9 @@
 pragma solidity ^0.4.25;
 
-import "./FlightSuretyAccessControl.sol";
+import "./FlightSuretyDataAccessControl.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-contract FlightSuretyPassengersData is FlightSuretyAccessControl {
+contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
     using SafeMath for uint256;
 
     struct Passenger {
