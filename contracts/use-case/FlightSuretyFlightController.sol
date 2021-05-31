@@ -17,69 +17,6 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
     // Number of oracles that must respond for valid status
     uint256 private constant MIN_ORACLE_RESPONSES = 3;
 
-    /**
-     * @dev Register a future flight for insuring.
-     *
-     */
-    function registerFlight(address airlineAddress, bytes32 flight) external {
-        require(
-            flightSuretyData.getAirlineParticipationStatus(msg.sender),
-            "Only Pariticipating Airlines can register a flight"
-        );
-
-        (bytes32 flightKey, uint256 timestamp) =
-            flightSuretyData.registerFlight(
-                airlineAddress,
-                flight,
-                STATUS_CODE_UNKNOWN
-            );
-
-        emit FlightStatusInfo(
-            airlineAddress,
-            flightKey,
-            timestamp,
-            STATUS_CODE_UNKNOWN
-        );
-    }
-
-    /**
-     * @dev Called after oracle has updated flight status
-     *
-     */
-    function processFlightStatus(
-        address airlineAddress,
-        bytes32 flightKey,
-        uint256 timestamp,
-        uint8 statusCode
-    ) internal {
-        // update flight statusCode
-        flightSuretyData.setFlightStatus(flightKey, statusCode);
-
-        emit FlightStatusInfo(airlineAddress, flightKey, timestamp, statusCode);
-    }
-
-    // Generate a request for oracles to fetch flight information
-    function fetchFlightStatus(
-        address airline,
-        bytes32 flightKey,
-        uint256 timestamp
-    ) external {
-        uint8 index = getRandomIndex(msg.sender);
-
-        // Generate a unique key for storing the request
-        bytes32 key =
-            keccak256(abi.encodePacked(index, airline, flightKey, timestamp));
-
-        // oracleResponses[key] = ResponseInfo({
-        //     requester: msg.sender,
-        //     isOpen: true
-        // });
-
-        emit OracleRequest(index, airline, flightKey, timestamp);
-    }
-
-    // region ORACLE MANAGEMENT
-
     // Incremented to add pseudo-randomness at various points
     uint8 private nonce = 0;
 
@@ -111,8 +48,92 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
         uint8 index,
         address airline,
         bytes32 flight,
-        uint256 timestamp
+        uint256 timestamp,
+        bytes32 oracleKey
     );
+
+    /**
+     * @dev Unique random key to register each flight. Serves as a flight id
+     *
+     */
+    function getFlightKey(
+        address airline,
+        bytes32 flight,
+        uint256 timestamp
+    ) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(airline, flight, timestamp));
+    }
+
+    /**
+     * @dev Register a future flight for insuring.
+     *
+     */
+    function registerFlight(address airlineAddress, bytes32 flight) external {
+        require(
+            flightSuretyData.getAirlineParticipationStatus(msg.sender),
+            "Only Pariticipating Airlines can register a flight"
+        );
+
+        bytes32 flightKey = getFlightKey(airlineAddress, flight, now);
+
+        flightSuretyData.registerFlight(
+            airlineAddress,
+            flight,
+            STATUS_CODE_UNKNOWN,
+            now,
+            flightKey
+        );
+
+        emit FlightStatusInfo(
+            airlineAddress,
+            flightKey,
+            now,
+            STATUS_CODE_UNKNOWN
+        );
+    }
+
+    /**
+     * @dev Called after oracle has updated flight status
+     *
+     */
+    function processFlightStatus(
+        address airlineAddress,
+        bytes32 flightKey,
+        uint256 timestamp,
+        uint8 statusCode
+    ) internal {
+        // update flight statusCode
+        flightSuretyData.setFlightStatus(flightKey, statusCode);
+
+        emit FlightStatusInfo(airlineAddress, flightKey, timestamp, statusCode);
+    }
+
+    // Generate a request for oracles to fetch flight information
+    function fetchFlightStatus(
+        address airline,
+        bytes32 flightKey,
+        uint256 timestamp
+    ) external {
+        uint8 index = getRandomIndex(msg.sender);
+
+        // Generate a unique key for storing the request
+        bytes32 oracleResponseKey =
+            keccak256(abi.encodePacked(index, airline, flightKey, timestamp));
+
+        // add the key of the oracleResponse - for oracles to update that data
+        flightSuretyData.createOpeningForOracleResponse(
+            oracleResponseKey,
+            msg.sender
+        );
+
+        emit OracleRequest(
+            index,
+            airline,
+            flightKey,
+            timestamp,
+            oracleResponseKey
+        );
+    }
 
     // Register an oracle with the contract
     function registerOracle() external payable {
@@ -121,7 +142,7 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
 
         uint8[3] memory indexes = generateIndexes(msg.sender);
 
-        // oracles[msg.sender] = Oracle({isRegistered: true, indexes: indexes});
+        flightSuretyData.registerOracle(msg.sender, indexes);
     }
 
     // Returns array of three non-duplicating integers from 0-9
@@ -166,9 +187,9 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
         return random;
     }
 
-    function getMyIndexes() external view // returns (uint8[3])
-    {
+    function getMyIndexes() external view returns (uint8[3]) {
         // call FlightData to get this data
+        return flightSuretyData.getOracleIndexes(msg.sender);
     }
 
     // Called by oracle when a response is available to an outstanding request
@@ -180,30 +201,38 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
         address airline,
         bytes32 flightKey,
         uint256 timestamp,
-        uint8 statusCode
+        uint8 statusCode,
+        bytes32 oracleKey
     ) external {
-        // require(
-        //     (oracles[msg.sender].indexes[0] == index) ||
-        //         (oracles[msg.sender].indexes[1] == index) ||
-        //         (oracles[msg.sender].indexes[2] == index),
-        //     "Index does not match oracle request"
-        // );
+        uint8[3] memory oracleIndexes =
+            flightSuretyData.getOracleIndexes(msg.sender);
 
-        // bytes32 key =
-        //     keccak256(abi.encodePacked(index, airline, flight, timestamp));
-        // require(
-        //     oracleResponses[key].isOpen,
-        //     "Flight or timestamp do not match oracle request"
-        // );
+        require(
+            (oracleIndexes[0] == index) ||
+                (oracleIndexes[1] == index) ||
+                (oracleIndexes[2] == index),
+            "Index does not match oracle request"
+        );
 
-        // oracleResponses[key].responses[statusCode].push(msg.sender);
+        require(
+            flightSuretyData.getIfOracleResponseIsOpen(oracleKey),
+            "Flight or timestamp do not match oracle request"
+        );
+
+        flightSuretyData.updateOracleResponsesStatusCode(
+            oracleKey,
+            statusCode,
+            msg.sender
+        );
 
         // Information isn't considered verified until at least MIN_RESPONSES
         // oracles respond with the *** same *** information
         emit OracleReport(airline, flightKey, timestamp, statusCode);
         if (
-            false
-            // oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES
+            flightSuretyData.getTotalNumberOfResponsesForThisStatusCode(
+                oracleKey,
+                statusCode
+            ) >= MIN_RESPONSES
         ) {
             emit FlightStatusInfo(airline, flightKey, timestamp, statusCode);
 

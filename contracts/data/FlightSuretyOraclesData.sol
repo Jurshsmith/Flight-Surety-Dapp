@@ -25,33 +25,44 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
     mapping(bytes32 => ResponseInfo) private oracleResponses;
 
     // Register an oracle with the contract
-    function registerOracle(uint8[3] indexes)
+    function registerOracle(address oracleAddress, uint8[3] indexes)
         external
         requireAuthorizedAddress
         requireIsOperational
     {
-        oracles[msg.sender] = Oracle({isRegistered: true, indexes: indexes});
+        oracles[oracleAddress] = Oracle({isRegistered: true, indexes: indexes});
     }
 
-    function requireRegisteredOracle(address oracleAddress) public view {
+    modifier requireRegisteredOracle(address oracleAddress) {
         require(
             oracles[oracleAddress].isRegistered,
             "Not registered as an oracle"
         );
+        _;
     }
 
-    function requireOracleWithPreferredIndex(uint8 index) public view {
-        require(
-            (oracles[msg.sender].indexes[0] == index) ||
-                (oracles[msg.sender].indexes[1] == index) ||
-                (oracles[msg.sender].indexes[2] == index),
-            "Index does not match oracle request"
-        );
+    function getOracleIndexes(address oracleAddress)
+        external
+        view
+        requireRegisteredOracle(oracleAddress)
+        returns (uint8[3])
+    {
+        return oracles[oracleAddress].indexes;
     }
 
-    function getOracleIndexes() external view returns (uint8[3]) {
-        requireRegisteredOracle(msg.sender);
-        return oracles[msg.sender].indexes;
+    function createOpeningForOracleResponse(
+        bytes32 oracleResponseKey,
+        address oracleAddress
+    )
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+        requireRegisteredOracle(oracleAddress)
+    {
+        oracleResponses[oracleResponseKey] = ResponseInfo({
+            requester: oracleAddress,
+            isOpen: true
+        });
     }
 
     function addOracleResponse(
@@ -61,9 +72,12 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         string flight,
         uint256 timestamp,
         uint8 statusCode
-    ) external requireAuthorizedAddress requireIsOperational {
-        requireRegisteredOracle(oracleAddress);
-        requireOracleWithPreferredIndex(index);
+    )
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+        requireRegisteredOracle(oracleAddress)
+    {
         bytes32 key =
             keccak256(abi.encodePacked(index, airline, flight, timestamp));
         require(
@@ -78,5 +92,28 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         view
     {
         oracleResponses[key].responses[statusCode].length;
+    }
+
+    function getIfOracleResponseIsOpen(bytes32 oracleKey)
+        external
+        view
+        returns (bool)
+    {
+        return oracleResponses[oracleKey].isOpen;
+    }
+
+    function updateOracleResponsesStatusCode(
+        bytes32 oracleKey,
+        uint8 statusCode,
+        address oracleAddress
+    ) external requireIsOperational requireAuthorizedAddress {
+        oracleResponses[oracleKey].responses[statusCode].push(oracleAddress);
+    }
+
+    function getTotalNumberOfResponsesForThisStatusCode(
+        bytes32 oracleKey,
+        uint8 statusCode
+    ) external view requireAuthorizedAddress returns (uint256) {
+        return oracleResponses[oracleKey].responses[statusCode].length;
     }
 }

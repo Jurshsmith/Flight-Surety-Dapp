@@ -20,34 +20,17 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
     function registerFlight(
         address airlineAddress,
         bytes32 flight,
-        uint8 statusCode
-    )
-        external
-        requireAuthorizedAddress
-        requireIsOperational
-        returns (bytes32, uint256)
-    {
-        bytes32 flightKey = getFlightKey(airlineAddress, flight, now);
+        uint8 statusCode,
+        uint256 timestamp,
+        bytes32 flightKey
+    ) external requireAuthorizedAddress requireIsOperational {
         flights[flightKey] = Flight(
             true,
             flight,
             airlineAddress,
             statusCode,
-            now
+            timestamp
         );
-        return (flightKey, now);
-    }
-
-    /**
-     * @dev Unique random key to register each flight. Serves as a flight id
-     *
-     */
-    function getFlightKey(
-        address airline,
-        bytes32 flight,
-        uint256 timestamp
-    ) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
 
     function setFlightStatus(bytes32 flightKey, uint8 statusCode)
