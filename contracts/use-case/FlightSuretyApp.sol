@@ -123,37 +123,61 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
      * @dev Register a future flight for insuring.
      *
      */
-    function registerFlight() external pure {}
+    function registerFlight(address airlineAddress, bytes32 flight) external {
+        require(
+            flightSuretyData.getAirlineParticipationStatus(msg.sender),
+            "Only Pariticipating Airlines can register a flight"
+        );
+
+        (bytes32 flightKey, uint256 timestamp) =
+            flightSuretyData.registerFlight(
+                airlineAddress,
+                flight,
+                STATUS_CODE_UNKNOWN
+            );
+
+        emit FlightStatusInfo(
+            airlineAddress,
+            flightKey,
+            timestamp,
+            STATUS_CODE_UNKNOWN
+        );
+    }
 
     /**
      * @dev Called after oracle has updated flight status
      *
      */
     function processFlightStatus(
-        address airline,
-        string memory flight,
+        address airlineAddress,
+        bytes32 flightKey,
         uint256 timestamp,
         uint8 statusCode
-    ) internal pure {}
+    ) internal {
+        // update flight statusCode
+        flightSuretyData.setFlightStatus(flightKey, statusCode);
+
+        emit FlightStatusInfo(airlineAddress, flightKey, timestamp, statusCode);
+    }
 
     // Generate a request for oracles to fetch flight information
     function fetchFlightStatus(
         address airline,
-        string flight,
+        bytes32 flightKey,
         uint256 timestamp
     ) external {
         uint8 index = getRandomIndex(msg.sender);
 
         // Generate a unique key for storing the request
         bytes32 key =
-            keccak256(abi.encodePacked(index, airline, flight, timestamp));
+            keccak256(abi.encodePacked(index, airline, flightKey, timestamp));
 
         // oracleResponses[key] = ResponseInfo({
         //     requester: msg.sender,
         //     isOpen: true
         // });
 
-        emit OracleRequest(index, airline, flight, timestamp);
+        emit OracleRequest(index, airline, flightKey, timestamp);
     }
 
     // region ORACLE MANAGEMENT
@@ -170,14 +194,14 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
     // Event fired each time an oracle submits a response
     event FlightStatusInfo(
         address airline,
-        string flight,
+        bytes32 flight,
         uint256 timestamp,
         uint8 status
     );
 
     event OracleReport(
         address airline,
-        string flight,
+        bytes32 flight,
         uint256 timestamp,
         uint8 status
     );
@@ -188,7 +212,7 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
     event OracleRequest(
         uint8 index,
         address airline,
-        string flight,
+        bytes32 flight,
         uint256 timestamp
     );
 
@@ -256,7 +280,7 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
     function submitOracleResponse(
         uint8 index,
         address airline,
-        string flight,
+        bytes32 flightKey,
         uint256 timestamp,
         uint8 statusCode
     ) external {
@@ -278,15 +302,15 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
 
         // Information isn't considered verified until at least MIN_RESPONSES
         // oracles respond with the *** same *** information
-        emit OracleReport(airline, flight, timestamp, statusCode);
+        emit OracleReport(airline, flightKey, timestamp, statusCode);
         if (
             false
             // oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES
         ) {
-            emit FlightStatusInfo(airline, flight, timestamp, statusCode);
+            emit FlightStatusInfo(airline, flightKey, timestamp, statusCode);
 
             // Handle flight status as appropriate
-            processFlightStatus(airline, flight, timestamp, statusCode);
+            processFlightStatus(airline, flightKey, timestamp, statusCode);
         }
     }
 

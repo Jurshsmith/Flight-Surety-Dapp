@@ -80,6 +80,15 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
         return preRegisteredAirlines[airlineAddress].isPreRegistered;
     }
 
+    function getAirlineParticipationStatus(address airlineAddress)
+        external
+        view
+        requireAuthorizedAddress
+        returns (bool)
+    {
+        return registeredAirlines[airlineAddress].isParticipating;
+    }
+
     function setAirlineParticipationStatus(
         address airlineAddress,
         bool isParticipating

@@ -17,15 +17,25 @@ contract FlightSuretyFlightsData is FlightSuretyAccessControl {
      * @dev Register a future flight for insuring.
      *
      */
-    function registerFlight(bytes32 flight)
+    function registerFlight(
+        address airlineAddress,
+        bytes32 flight,
+        uint8 statusCode
+    )
         external
         requireAuthorizedAddress
         requireIsOperational
-        returns (bytes32)
+        returns (bytes32, uint256)
     {
-        bytes32 flightKey = getFlightKey(msg.sender, flight, now);
-        flights[flightKey] = Flight(true, flight, msg.sender, 0, now);
-        return flightKey;
+        bytes32 flightKey = getFlightKey(airlineAddress, flight, now);
+        flights[flightKey] = Flight(
+            true,
+            flight,
+            airlineAddress,
+            statusCode,
+            now
+        );
+        return (flightKey, now);
     }
 
     /**
@@ -38,5 +48,13 @@ contract FlightSuretyFlightsData is FlightSuretyAccessControl {
         uint256 timestamp
     ) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
+    }
+
+    function setFlightStatus(bytes32 flightKey, uint8 statusCode)
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+    {
+        flights[flightKey].statusCode = statusCode;
     }
 }
