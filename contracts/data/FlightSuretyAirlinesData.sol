@@ -3,10 +3,6 @@ pragma solidity ^0.4.25;
 import "./FlightSuretyAccessControl.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-// Lessons
-// The data should be like you are designing a database. It's designed as a persisting layer
-// use enum in place of string
-//Storage, Memory, stack is the place where the variable is stored, Local/State defines both scope and the place in solidity
 contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
     using SafeMath for uint256;
 
@@ -122,7 +118,12 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
     function setPreRegisteredAirlineNoOfVotes(
         address airlineAddress,
         uint256 votes
-    ) external {
+    )
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+        requireAirlineIsPreRegistered(airlineAddress)
+    {
         preRegisteredAirlines[airlineAddress].votes = votes;
     }
 }
