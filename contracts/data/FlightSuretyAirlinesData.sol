@@ -16,18 +16,15 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
 
     struct RegisteredAirline {
         uint256 amountPaid;
+        bool isRegistered;
+        bool isParticipating;
     }
 
     mapping(address => RegisteredAirline) registeredAirlines;
-    int256 registeredAirlinesLength = 0;
+    uint256 public registeredAirlinesLength = 0;
 
     mapping(address => PreRegisteredAirline) preRegisteredAirlines;
-    int256 preRegisteredAirlinesLength = 0;
-
-    constructor(address firstAirline) public {
-        registeredAirlines[firstAirline] = RegisteredAirline(0);
-        registeredAirlinesLength++;
-    }
+    uint256 public preRegisteredAirlinesLength = 0;
 
     /**
      * @dev Add an airline to the registration queue
@@ -39,7 +36,7 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
         requireAuthorizedAddress
         requireIsOperational
     {
-        registeredAirlines[airline] = RegisteredAirline(0);
+        registeredAirlines[airline] = RegisteredAirline(0, true, false);
         registeredAirlinesLength++;
     }
 
@@ -50,5 +47,14 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
     {
         preRegisteredAirlines[airline] = PreRegisteredAirline(0);
         preRegisteredAirlinesLength++;
+    }
+
+    function getRegisteredAirlineIsRegistered(address airlineAddress)
+        external
+        view
+        requireAuthorizedAddress
+        returns (bool)
+    {
+        return registeredAirlines[airlineAddress].isRegistered;
     }
 }

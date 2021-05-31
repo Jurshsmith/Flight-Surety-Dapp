@@ -7,7 +7,7 @@ contract FlightSuretyFlightsData is FlightSuretyAccessControl {
         bool isRegistered;
         bytes32 flight;
         address airline;
-        int8 statusCode;
+        uint8 statusCode;
         uint256 updatedTimestamp;
         mapping(address => uint256) passengers;
     }

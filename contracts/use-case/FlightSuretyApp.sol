@@ -18,6 +18,9 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
     uint8 private constant STATUS_CODE_LATE_TECHNICAL = 40;
     uint8 private constant STATUS_CODE_LATE_OTHER = 50;
 
+    // Max Flight before voting starts
+    uint8 private constant MAX_AIRLINES_COUNT = 4;
+
     /**
      * @dev Contract constructor
      *
@@ -25,6 +28,8 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
     constructor(address dataContractAddress) public {
         flightSuretyDataContractAddress = dataContractAddress;
         flightSuretyData = FlightSuretyData(dataContractAddress);
+
+        flightSuretyData.registerAirline(msg.sender); // assuming the first person to deploy the contract (Contract owner) wants to be first airline
     }
 
     function giveAccessToFlightSuretyData(address myAddress)
@@ -38,12 +43,32 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
      * @dev Add an airline to the registration queue
      *
      */
-    function registerAirline()
+    function registerAirline(address airlineAddress)
         external
-        pure
-        returns (bool success, uint256 votes)
+        requireIsOperational
+        returns (bool)
     {
-        return (success, 0);
+        bool requiresReferral =
+            flightSuretyData.registeredAirlinesLength() <= MAX_AIRLINES_COUNT;
+
+        processAirlineRegistration(airlineAddress, requiresReferral);
+
+        return true;
+    }
+
+    function processAirlineRegistration(
+        address airlineAddress,
+        bool requiresReferral
+    ) internal {
+        if (!requiresReferral) {
+            flightSuretyData.preRegisterAirline(airlineAddress);
+        } else {
+            require(
+                flightSuretyData.getRegisteredAirlineIsRegistered(msg.sender),
+                "You are not authorized to register an airline at this point"
+            );
+            flightSuretyData.registerAirline(airlineAddress);
+        }
     }
 
     /**
