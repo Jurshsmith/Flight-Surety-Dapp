@@ -11,11 +11,12 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
     using SafeMath for uint256;
 
     struct PreRegisteredAirline {
-        int256 votes;
+        uint256 votes;
+        bool isPreRegistered;
     }
 
     struct RegisteredAirline {
-        uint256 amountPaid;
+        uint256 seedFundingAmount;
         bool isRegistered;
         bool isParticipating;
     }
@@ -31,22 +32,38 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
      *      Can only be called from FlightSuretyApp contract
      *
      */
-    function registerAirline(address airline)
+    function registerAirline(address airlineAddress)
         external
         requireAuthorizedAddress
         requireIsOperational
     {
-        registeredAirlines[airline] = RegisteredAirline(0, true, false);
+        registeredAirlines[airlineAddress] = RegisteredAirline(0, true, false);
         registeredAirlinesLength++;
     }
 
-    function preRegisterAirline(address airline)
+    function preRegisterAirline(address airlineAddress)
         external
         requireAuthorizedAddress
         requireIsOperational
     {
-        preRegisteredAirlines[airline] = PreRegisteredAirline(0);
+        preRegisteredAirlines[airlineAddress] = PreRegisteredAirline(0, true);
         preRegisteredAirlinesLength++;
+    }
+
+    modifier requireAirlineIsRegistered(address airlineAddress) {
+        require(
+            registeredAirlines[airlineAddress].isRegistered,
+            "Airline not registered"
+        );
+        _;
+    }
+
+    modifier requireAirlineIsPreRegistered(address airlineAddress) {
+        require(
+            preRegisteredAirlines[airlineAddress].isPreRegistered,
+            "Airline not pre-registered"
+        );
+        _;
     }
 
     function getRegisteredAirlineIsRegistered(address airlineAddress)
@@ -56,5 +73,56 @@ contract FlightSuretyAirlinesData is FlightSuretyAccessControl {
         returns (bool)
     {
         return registeredAirlines[airlineAddress].isRegistered;
+    }
+
+    function getPreRegisteredAirlineIsPreRegistered(address airlineAddress)
+        external
+        view
+        requireAuthorizedAddress
+        returns (bool)
+    {
+        return preRegisteredAirlines[airlineAddress].isPreRegistered;
+    }
+
+    function setAirlineParticipationStatus(
+        address airlineAddress,
+        bool isParticipating
+    )
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+        requireAirlineIsRegistered(airlineAddress)
+    {
+        // You want to avoid hitting your DB(persistence layer) as much as possible
+        registeredAirlines[airlineAddress].isParticipating = isParticipating;
+    }
+
+    function updateAirlineSeedFundingAmount(
+        address airlineAddress,
+        uint256 seedFundingAmount
+    )
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+        requireAirlineIsRegistered(airlineAddress)
+    {
+        registeredAirlines[airlineAddress]
+            .seedFundingAmount += seedFundingAmount;
+    }
+
+    function getPreRegisteredAirlineNoOfVotes(address airlineAddress)
+        external
+        view
+        requireAuthorizedAddress
+        returns (uint256)
+    {
+        return preRegisteredAirlines[airlineAddress].votes;
+    }
+
+    function setPreRegisteredAirlineNoOfVotes(
+        address airlineAddress,
+        uint256 votes
+    ) external {
+        preRegisteredAirlines[airlineAddress].votes = votes;
     }
 }

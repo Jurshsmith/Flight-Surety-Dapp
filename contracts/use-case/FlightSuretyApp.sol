@@ -19,7 +19,7 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
     uint8 private constant STATUS_CODE_LATE_OTHER = 50;
 
     // Max Flight before voting starts
-    uint8 private constant MAX_AIRLINES_COUNT = 4;
+    uint8 private constant MAX_AIRLINES_TO_END_REFERRAL = 4;
 
     /**
      * @dev Contract constructor
@@ -49,7 +49,8 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
         returns (bool)
     {
         bool requiresReferral =
-            flightSuretyData.registeredAirlinesLength() <= MAX_AIRLINES_COUNT;
+            flightSuretyData.registeredAirlinesLength() <=
+                MAX_AIRLINES_TO_END_REFERRAL;
 
         processAirlineRegistration(airlineAddress, requiresReferral);
 
@@ -69,6 +70,53 @@ contract FlightSuretyApp is FlightSuretyAppAccessControl {
             );
             flightSuretyData.registerAirline(airlineAddress);
         }
+    }
+
+    function voteForPregisteredAirline(address airlineAddress) external {
+        require(
+            flightSuretyData.getRegisteredAirlineIsRegistered(msg.sender),
+            "You are not authorized to vote an airline at this point"
+        );
+        require(
+            flightSuretyData.getPreRegisteredAirlineIsPreRegistered(
+                airlineAddress
+            ),
+            "Airline has not been pre-registered"
+        );
+
+        uint256 currentPreRegisteredAirlineVotes =
+            flightSuretyData.getPreRegisteredAirlineNoOfVotes(airlineAddress);
+
+        currentPreRegisteredAirlineVotes++;
+
+        flightSuretyData.setPreRegisteredAirlineNoOfVotes(
+            airlineAddress,
+            currentPreRegisteredAirlineVotes
+        );
+
+        uint256 requiredConsensusVotes =
+            flightSuretyData.registeredAirlinesLength().div(2);
+
+        if (currentPreRegisteredAirlineVotes >= requiredConsensusVotes) {
+            flightSuretyData.registerAirline(airlineAddress);
+        }
+    }
+
+    function payAirlineSeedFunding(address airlineAddress) external payable {
+        require(
+            flightSuretyData.getRegisteredAirlineIsRegistered(airlineAddress),
+            "Airline is not registered"
+        );
+
+        require(msg.value == 10 ether, "Minimum seed funding is 10 ether");
+
+        flightSuretyDataContractAddress.transfer(msg.value);
+
+        flightSuretyData.updateAirlineSeedFundingAmount(
+            airlineAddress,
+            msg.value
+        );
+        flightSuretyData.setAirlineParticipationStatus(airlineAddress, true);
     }
 
     /**
