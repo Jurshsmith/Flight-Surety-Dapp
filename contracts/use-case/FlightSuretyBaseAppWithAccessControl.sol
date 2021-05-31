@@ -1,15 +1,27 @@
 pragma solidity ^0.4.25;
 
-contract FlightSuretyAppAccessControl {
+import "../data/FlightSuretyData.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+
+contract FlightSuretyBaseAppWithAccessControl {
+    using SafeMath for uint256;
+
+    FlightSuretyData flightSuretyData;
+    address flightSuretyDataContractAddress;
+
     address private contractOwner; // Account used to deploy contract
     bool private operational = true; // Blocks all state changes throughout the contract if false
 
     /**
-     * @dev Constructor
-     *      The deploying account becomes contractOwner
+     * @dev Contract constructor
+     *
      */
-    constructor() public {
+    constructor(address dataContractAddress) public {
         contractOwner = msg.sender;
+        flightSuretyDataContractAddress = dataContractAddress;
+        flightSuretyData = FlightSuretyData(dataContractAddress);
+
+        flightSuretyData.registerAirline(msg.sender); // assuming the first person to deploy the contract (Contract owner) wants to be first airline
     }
 
     /**
@@ -46,5 +58,12 @@ contract FlightSuretyAppAccessControl {
      */
     function setOperatingStatus(bool mode) external requireContractOwner {
         operational = mode;
+    }
+
+    function giveAccessToFlightSuretyData(address myAddress)
+        external
+        requireContractOwner
+    {
+        flightSuretyData.authorizeAddress(myAddress);
     }
 }
