@@ -16,13 +16,9 @@ contract FlightSuretyBaseAppWithAccessControl {
      * @dev Contract constructor
      *
      */
-    constructor(address dataContractAddress) public {
-        contractOwner = msg.sender;
-        flightSuretyDataContractAddress = dataContractAddress;
-        flightSuretyData = FlightSuretyData(dataContractAddress);
-
-        flightSuretyData.registerAirline(msg.sender); // assuming the first person to deploy the contract (Contract owner) wants to be first airline
-    }
+     constructor() public {
+         contractOwner = msg.sender;
+     }
 
     /**
      * @dev Modifier that requires the "ContractOwner" account to be the function caller
@@ -58,12 +54,5 @@ contract FlightSuretyBaseAppWithAccessControl {
      */
     function setOperatingStatus(bool mode) external requireContractOwner {
         operational = mode;
-    }
-
-    function giveAccessToFlightSuretyData(address myAddress)
-        external
-        requireContractOwner
-    {
-        flightSuretyData.authorizeAddress(myAddress);
     }
 }

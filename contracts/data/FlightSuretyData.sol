@@ -11,9 +11,4 @@ contract FlightSuretyData is
     FlightSuretyAirlinesData,
     FlightSuretyPassengersData
 {
-    /**
-     * @dev Fallback function for funding smart contract.
-     *
-     */
-    function() external payable {}
 }
