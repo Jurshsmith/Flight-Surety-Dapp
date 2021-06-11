@@ -32,7 +32,7 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             flightSuretyData.preRegisterAirline(airlineAddress);
         } else {
             require(
-                flightSuretyData.getRegisteredAirlineIsRegistered(msg.sender),
+                flightSuretyData.getRegisteredAirlineIsParticipating(msg.sender),
                 "You are not authorized to register an airline at this point"
             );
             flightSuretyData.registerAirline(airlineAddress);
