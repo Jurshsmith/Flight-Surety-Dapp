@@ -69,20 +69,20 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
         }
     }
 
-    function payAirlineSeedFunding(address airlineAddress) external payable {
+    function payAirlineSeedFunding() external payable {
         require(
-            flightSuretyData.getRegisteredAirlineIsRegistered(airlineAddress),
+            flightSuretyData.getRegisteredAirlineIsRegistered(msg.sender),
             "Airline is not registered"
         );
 
-        require(msg.value == 10 ether, "Minimum seed funding is 10 ether");
+        require((msg.value == 10 ether), "Minimum seed funding is 10 ether");
 
         flightSuretyDataContractAddress.transfer(msg.value);
 
         flightSuretyData.updateAirlineSeedFundingAmount(
-            airlineAddress,
+            msg.sender,
             msg.value
         );
-        flightSuretyData.setAirlineParticipationStatus(airlineAddress, true);
+        flightSuretyData.setAirlineParticipationStatus(msg.sender, true);
     }
 }

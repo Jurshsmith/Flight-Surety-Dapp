@@ -11,4 +11,5 @@ contract FlightSuretyData is
     FlightSuretyAirlinesData,
     FlightSuretyPassengersData
 {
+    function () public payable {}  
 }

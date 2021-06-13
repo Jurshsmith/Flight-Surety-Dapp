@@ -14,6 +14,6 @@ contract FlightSuretyApp is
 
     function initializationActions(address firstAirline) external requireContractOwner {
         // should be done after this contract has been authorized
-        flightSuretyData.registerAirline(firstAirline); // assuming the first person to deploy the contract (Contract owner) wants to be first airline
+        flightSuretyData.registerAirline(firstAirline); 
     }
 }
