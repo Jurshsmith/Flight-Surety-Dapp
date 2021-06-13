@@ -16,7 +16,7 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
         returns (bool)
     {
         bool requiresReferral =
-            flightSuretyData.registeredAirlinesLength() <=
+            flightSuretyData.registeredAirlinesLength() <
                 MAX_AIRLINES_TO_END_REFERRAL;
 
         processAirlineRegistration(airlineAddress, requiresReferral);
@@ -44,6 +44,10 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             flightSuretyData.getRegisteredAirlineIsRegistered(msg.sender),
             "You are not authorized to vote an airline at this point"
         );
+         require(
+                flightSuretyData.getRegisteredAirlineIsParticipating(msg.sender),
+                "You are not authorized to register an airline at this point"
+            );
         require(
             flightSuretyData.getPreRegisteredAirlineIsPreRegistered(
                 airlineAddress
@@ -51,13 +55,16 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             "Airline has not been pre-registered"
         );
 
+        require(!flightSuretyData.getHasRegisteredAirlineVote(msg.sender, airlineAddress), "You cant vote more than once");
+
         uint256 currentPreRegisteredAirlineVotes =
             flightSuretyData.getPreRegisteredAirlineNoOfVotes(airlineAddress);
 
         currentPreRegisteredAirlineVotes++;
 
-        flightSuretyData.setPreRegisteredAirlineNoOfVotes(
+        flightSuretyData.setRegisteredAirlineVote(
             airlineAddress,
+            msg.sender,
             currentPreRegisteredAirlineVotes
         );
 

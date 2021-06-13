@@ -7,8 +7,9 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
     using SafeMath for uint256;
 
     struct PreRegisteredAirline {
-        uint256 votes;
+        uint256 voteCount;
         bool isPreRegistered;
+        mapping(address => bool) registeredAirlines;
     }
 
     struct RegisteredAirline {
@@ -72,7 +73,11 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
     }
 
     function getRegisteredAirlineIsParticipating(address airlineAddress)
-    external view requireAuthorizedAddress returns (bool){
+        external
+        view
+        requireAuthorizedAddress
+        returns (bool)
+    {
         return registeredAirlines[airlineAddress].isParticipating;
     }
 
@@ -126,7 +131,7 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         requireAuthorizedAddress
         returns (uint256)
     {
-        return preRegisteredAirlines[airlineAddress].votes;
+        return preRegisteredAirlines[airlineAddress].voteCount;
     }
 
     function setPreRegisteredAirlineNoOfVotes(
@@ -138,6 +143,39 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         requireIsOperational
         requireAirlineIsPreRegistered(airlineAddress)
     {
-        preRegisteredAirlines[airlineAddress].votes = votes;
+        preRegisteredAirlines[airlineAddress].voteCount = votes;
+    }
+
+    function setRegisteredAirlineVote(
+        address preRegisteredAirlineAddress,
+        address registeredAirlineAddress,
+        uint256 votes
+    )
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+        requireAirlineIsPreRegistered(preRegisteredAirlineAddress)
+        requireAirlineIsRegistered(registeredAirlineAddress)
+    {
+        preRegisteredAirlines[preRegisteredAirlineAddress].registeredAirlines[
+            registeredAirlineAddress
+        ] = true;
+        preRegisteredAirlines[preRegisteredAirlineAddress].voteCount = votes;
+    }
+
+    function getHasRegisteredAirlineVote(
+        address preRegisteredAirlineAddress,
+        address registeredAirlineAddress
+    )
+        external
+        view
+        requireAuthorizedAddress
+        requireAirlineIsPreRegistered(preRegisteredAirlineAddress)
+        requireAirlineIsRegistered(registeredAirlineAddress)
+        returns (bool)
+    {
+        return preRegisteredAirlines[preRegisteredAirlineAddress].registeredAirlines[
+            registeredAirlineAddress
+        ];
     }
 }

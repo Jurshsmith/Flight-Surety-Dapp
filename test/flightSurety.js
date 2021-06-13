@@ -35,7 +35,7 @@ contract("Flight Surety Tests", async (accounts) => {
                 );
             });
 
-            it(`can allow access to setOperatingStatus() for Contract Owner account`, async function () {
+            it(`can allow access to setOperatingStatus() for Contract Owner account`, async () => {
                 // Ensure that access is allowed for Contract Owner account
                 let accessDenied = false;
                 try {
@@ -72,7 +72,8 @@ contract("Flight Surety Tests", async (accounts) => {
             });
         });
 
-        describe("Airline Registration", () => {
+        describe("Airline Registration", function () {
+            let testThreeAccounts
             it("(referral) cannot register an Airline using registerAirline() if it is not funded", async () => {
                 // ARRANGE
                 let newAirline = accounts[2];
@@ -83,14 +84,13 @@ contract("Flight Surety Tests", async (accounts) => {
                         from: config.firstAirline,
                     });
                 } catch (e) { }
-                let result =
-                    await config.flightSuretyData.getRegisteredAirlineIsRegistered.call(
-                        newAirline
-                    );
+
 
                 // ASSERT
                 assert.equal(
-                    result,
+                    await config.flightSuretyData.getRegisteredAirlineIsRegistered.call(
+                        newAirline
+                    ),
                     false,
                     "Airline should not be able to register another airline if it hasn't provided funding"
                 );
@@ -106,15 +106,15 @@ contract("Flight Surety Tests", async (accounts) => {
                 });
 
                 // register airline 2 and check it is registered, repeat cycle till 4th airline
-                const testAccounts = accounts.slice(3, 6);
+                this.testAccounts = accounts.slice(3, 6);
 
 
                 (await Promise.allSettled(
-                    testAccounts
+                    this.testAccounts
                         .map((newAirline, i) =>
                             [
                                 config.flightSuretyApp.registerAirline(newAirline, {
-                                    from: testAccounts?.[i - 1] || config.firstAirline,
+                                    from: this.testAccounts?.[i - 1] || config.firstAirline,
                                 }),
                                 config.flightSuretyApp.payAirlineSeedFunding({
                                     from: newAirline,
@@ -125,7 +125,7 @@ contract("Flight Surety Tests", async (accounts) => {
                 ));
 
                 const newAirlinesRegistered = (await Promise.all(
-                    testAccounts.map(newAirline => config.flightSuretyData.getRegisteredAirlineIsRegistered.call(
+                    this.testAccounts.map(newAirline => config.flightSuretyData.getRegisteredAirlineIsRegistered.call(
                         newAirline
                     ))
                 )).filter(Boolean)
@@ -133,15 +133,63 @@ contract("Flight Surety Tests", async (accounts) => {
 
                 assert.equal(
                     newAirlinesRegistered.length,
-                    testAccounts.length,
+                    this.testAccounts.length,
                     "All new Airlines should be able registered since a participating airline referred it"
                 );
+
             });
 
-            it("(multiparty) should register fifth airline using multiparty consensus algorithm", () => {
+            it('(referral) should pre-register the fifth airline and await consensus before registering', async () => {
                 // try adding fifth airline and check if it is registration queue (it shouldn't)
+                this.fifthAirline = accounts[6];
+
+                try {
+                    await config.flightSuretyApp.registerAirline(this.fifthAirline, {
+                        from: config.firstAirline,
+                    });
+                } catch (e) { }
+
+                // ASSERT
+                assert.equal(
+                    await config.flightSuretyData.getRegisteredAirlineIsRegistered.call(
+                        this.fifthAirline
+                    ),
+                    false,
+                    "Fifth Airline shouldn't register because it needs consensus"
+                );
+
+                assert.equal(
+                    await config.flightSuretyData.getPreRegisteredAirlineIsPreRegistered.call(
+                        this.fifthAirline
+                    ),
+                    true,
+                    "Fifth Airline should be pre-registered at this point"
+                );
+            })
+
+            it("(multiparty) should register fifth airline using multiparty consensus algorithm", async () => {
                 // let 1 airline vote, and check if it is in the registration queue(it shouldn't)
                 // let 2 airlines vote, and check if it is in the registration queue(it should)
+                config.flightSuretyApp.voteForPregisteredAirline(this.fifthAirline, { from: config.firstAirline });
+
+                assert.equal(
+                    await config.flightSuretyData.getRegisteredAirlineIsRegistered.call(
+                        this.fifthAirline
+                    ),
+                    false,
+                    "Fifth Airline shouldn't register because it still needs consensus"
+                );
+
+                config.flightSuretyApp.voteForPregisteredAirline(this.fifthAirline, { from: this.testAccounts[0] });
+
+                assert.equal(
+                    await config.flightSuretyData.getRegisteredAirlineIsRegistered.call(
+                        this.fifthAirline
+                    ),
+                    true,
+                    "Fifth Airline should register after 2 of 4 (50%) votes"
+                );
+
             });
         });
 
