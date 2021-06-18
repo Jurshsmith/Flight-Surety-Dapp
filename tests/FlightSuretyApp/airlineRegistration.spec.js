@@ -103,9 +103,6 @@ module.exports = ({ describe, it, configWrapper, accounts }) => describe("Airlin
   it("(multiparty) should register fifth airline using multiparty consensus algorithm", async () => {
     // let 1 airline vote, and check if it is in the registration queue(it shouldn't)
     // let 2 airlines vote, and check if it is in the registration queue(it should)
-
-    console.log({ f: this.fifthAirline, a: configWrapper.config.firstAirline })
-
     await configWrapper.config.flightSuretyApp.voteForPregisteredAirline(this.fifthAirline, { from: configWrapper.config.firstAirline });
 
     assert.equal(

@@ -34,7 +34,7 @@ To install, download or clone the repo, then:
 To run truffle tests:
 
 App: `npm run test:contracts:app`
-Data: `npm run test:contracts:data`
+Data(oracle): `npm run test:contracts:data`
 
 To use the dapp:
 

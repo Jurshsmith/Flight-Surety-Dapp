@@ -4,7 +4,7 @@ import Contract from './contract';
 import './flightsurety.css';
 
 
-(async() => {
+(async () => {
 
     let result = null;
 
@@ -12,22 +12,22 @@ import './flightsurety.css';
 
         // Read transaction
         contract.isOperational((error, result) => {
-            console.log(error,result);
-            display('Operational Status', 'Check if contract is operational', [ { label: 'Operational Status', error: error, value: result} ]);
+            console.log(error, result);
+            display('Operational Status', 'Check if contract is operational', [{ label: 'Operational Status', error: error, value: result }]);
         });
-    
+
 
         // User-submitted transaction
         DOM.elid('submit-oracle').addEventListener('click', () => {
             let flight = DOM.elid('flight-number').value;
             // Write transaction
             contract.fetchFlightStatus(flight, (error, result) => {
-                display('Oracles', 'Trigger oracles', [ { label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp} ]);
+                display('Oracles', 'Trigger oracles', [{ label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp }]);
             });
         })
-    
+
     });
-    
+
 
 })();
 
@@ -38,13 +38,12 @@ function display(title, description, results) {
     section.appendChild(DOM.h2(title));
     section.appendChild(DOM.h5(description));
     results.map((result) => {
-        let row = section.appendChild(DOM.div({className:'row'}));
-        row.appendChild(DOM.div({className: 'col-sm-4 field'}, result.label));
-        row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, result.error ? String(result.error) : String(result.value)));
+        let row = section.appendChild(DOM.div({ className: 'row' }));
+        row.appendChild(DOM.div({ className: 'col-sm-4 field' }, result.label));
+        row.appendChild(DOM.div({ className: 'col-sm-8 field-value' }, result.error ? String(result.error) : String(result.value)));
         section.appendChild(row);
     })
     displayDiv.append(section);
-
 }
 
 

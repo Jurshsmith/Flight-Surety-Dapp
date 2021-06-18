@@ -13,8 +13,8 @@
 
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="#">FlightSurety</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
-            aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
     </nav>
@@ -23,8 +23,46 @@
 
         <div id="display-wrapper" class="top-20">
         </div>
+        <div class="row">
+            <p>Airline to submit flight</p> <br />
+        </div>
+        <div class="row">
+            <label class="form" for="flight-name">Flight Name:</label> <input type="text" id="flight-name">
+            <btn class="btn btn-primary" id="create-flight">Create Flight</btn>
+        </div>
+
         <div class="row top-20">
-            <label class="form">Flight</label> <input type="text" id="flight-number"> <btn class="btn btn-primary" id="submit-oracle">Submit to Oracles</btn>
+            <p>Passenger to pick a flight</p> <br />
+        </div>
+        <div class="row">
+            <label for="flight-options">Flights:</label>
+
+            <select style="margin-left: 20px; width: 100px;" placeholder="Flight Options" id="flight-options">
+                <option value="0">null</option>
+            </select>
+            <btn style="margin-left: 20px;" class="btn btn-primary" id="submit-picked-flight">Pick Flight</btn>
+        </div>
+
+        <div class="row top-20">
+            <p>Passenger/Anyone to check flight status</p> <br />
+        </div>
+        <div class="row">
+            <label class="form" for="flight-status-field">Flight</label> <input type="text" id="flight-status-field">
+            <btn class="btn btn-primary" id="fetch-flight-status">Fetch flight status</btn>
+        </div>
+
+        <div class="row top-20">
+            <p>Passenger to check their balance</p> <br />
+        </div>
+        <div class="row">
+            <btn class="btn btn-primary" id="check-balance">Check Balance</btn>
+        </div>
+
+        <div class="row top-20">
+            <p>Passenger to withdraw their balance</p> <br />
+        </div>
+        <div class="row">
+            <btn class="btn btn-primary" id="cash-out">Cash out</btn>
         </div>
     </main>
 
