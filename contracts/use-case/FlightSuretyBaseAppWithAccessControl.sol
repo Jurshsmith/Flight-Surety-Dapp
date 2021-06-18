@@ -11,15 +11,15 @@ contract FlightSuretyBaseAppWithAccessControl {
 
     address private contractOwner; // Account used to deploy contract
     bool private operational = true; // Blocks all state changes throughout the contract if false
-    event Logger(uint logData);
+    event Logger(string logData);
 
     /**
      * @dev Contract constructor
      *
      */
-     constructor() public {
-         contractOwner = msg.sender;
-     }
+    constructor() public {
+        contractOwner = msg.sender;
+    }
 
     /**
      * @dev Modifier that requires the "ContractOwner" account to be the function caller

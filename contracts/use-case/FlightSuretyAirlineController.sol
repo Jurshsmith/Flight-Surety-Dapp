@@ -41,7 +41,11 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
         }
     }
 
-    function voteForPregisteredAirline(address airlineAddress) external {
+    function voteForPregisteredAirline(address airlineAddress)
+        external
+        requireIsOperational
+    {
+        // In a real-world contract this requireStatement should be single transaction from the flightSuretyData contract
         require(
             flightSuretyData.getRegisteredAirlineIsRegistered(msg.sender),
             "You are not authorized to vote an airline at this point"
@@ -56,11 +60,10 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             ),
             "Airline has not been pre-registered"
         );
-
         require(
             !flightSuretyData.getHasRegisteredAirlineVote(
-                msg.sender,
-                airlineAddress
+                airlineAddress,
+                msg.sender
             ),
             "You cant vote more than once"
         );
