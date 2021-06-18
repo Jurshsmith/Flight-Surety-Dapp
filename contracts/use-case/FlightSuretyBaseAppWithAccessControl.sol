@@ -11,6 +11,7 @@ contract FlightSuretyBaseAppWithAccessControl {
 
     address private contractOwner; // Account used to deploy contract
     bool private operational = true; // Blocks all state changes throughout the contract if false
+    event Logger(uint logData);
 
     /**
      * @dev Contract constructor

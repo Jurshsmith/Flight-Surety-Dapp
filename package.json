@@ -8,7 +8,8 @@
   "repository": "https://github.com/techbubble/flightsurety",
   "license": "MIT",
   "scripts": {
-    "test": "truffle test ./test/flightSurety.js",
+    "test:contracts:app": "truffle test ./tests/FlightSuretyApp/FlightSuretyApp.spec.js",
+    "test:contracts:data": "truffle test ./tests/FlightSuretyData/FlightSuretyData.spec.js",
     "dapp": "webpack-dev-server --mode development --config webpack.config.dapp.js",
     "dapp:prod": "webpack --mode production  --config webpack.config.dapp.js",
     "server": "rm -rf ./build/server && webpack --config webpack.config.server.js",
@@ -40,11 +41,13 @@
     "superstatic": "6.0.3",
     "truffle": "5.0.2",
     "truffle-hdwallet-provider": "1.0.2",
-    "web3": "1.0.0-beta.37",
+    "web3": "1.3.4",
     "webpack": "^4.6.0",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "3.1.14",
     "webpack-node-externals": "1.7.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "truffle-assertions": "^0.9.2"
+  }
 }

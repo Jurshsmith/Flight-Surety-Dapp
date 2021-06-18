@@ -33,8 +33,8 @@ To install, download or clone the repo, then:
 
 To run truffle tests:
 
-`truffle test ./test/flightSurety.js`
-`truffle test ./test/oracles.js`
+App: `npm run test:contracts:app`
+Data: `npm run test:contracts:data`
 
 To use the dapp:
 

@@ -174,8 +174,8 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         requireAirlineIsRegistered(registeredAirlineAddress)
         returns (bool)
     {
-        return preRegisteredAirlines[preRegisteredAirlineAddress].registeredAirlines[
-            registeredAirlineAddress
-        ];
+        return
+            preRegisteredAirlines[preRegisteredAirlineAddress]
+                .registeredAirlines[registeredAirlineAddress];
     }
 }

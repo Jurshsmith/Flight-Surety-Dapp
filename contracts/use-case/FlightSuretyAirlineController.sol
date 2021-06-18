@@ -32,7 +32,9 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             flightSuretyData.preRegisterAirline(airlineAddress);
         } else {
             require(
-                flightSuretyData.getRegisteredAirlineIsParticipating(msg.sender),
+                flightSuretyData.getRegisteredAirlineIsParticipating(
+                    msg.sender
+                ),
                 "You are not authorized to register an airline at this point"
             );
             flightSuretyData.registerAirline(airlineAddress);
@@ -44,10 +46,10 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             flightSuretyData.getRegisteredAirlineIsRegistered(msg.sender),
             "You are not authorized to vote an airline at this point"
         );
-         require(
-                flightSuretyData.getRegisteredAirlineIsParticipating(msg.sender),
-                "You are not authorized to register an airline at this point"
-            );
+        require(
+            flightSuretyData.getRegisteredAirlineIsParticipating(msg.sender),
+            "You are not authorized to register an airline at this point"
+        );
         require(
             flightSuretyData.getPreRegisteredAirlineIsPreRegistered(
                 airlineAddress
@@ -55,7 +57,13 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             "Airline has not been pre-registered"
         );
 
-        require(!flightSuretyData.getHasRegisteredAirlineVote(msg.sender, airlineAddress), "You cant vote more than once");
+        require(
+            !flightSuretyData.getHasRegisteredAirlineVote(
+                msg.sender,
+                airlineAddress
+            ),
+            "You cant vote more than once"
+        );
 
         uint256 currentPreRegisteredAirlineVotes =
             flightSuretyData.getPreRegisteredAirlineNoOfVotes(airlineAddress);
@@ -86,10 +94,7 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
 
         flightSuretyDataContractAddress.transfer(msg.value);
 
-        flightSuretyData.updateAirlineSeedFundingAmount(
-            msg.sender,
-            msg.value
-        );
+        flightSuretyData.updateAirlineSeedFundingAmount(msg.sender, msg.value);
         flightSuretyData.setAirlineParticipationStatus(msg.sender, true);
     }
 }
