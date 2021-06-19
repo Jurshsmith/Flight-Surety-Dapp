@@ -1,9 +1,6 @@
 
 module.exports = ({ describe, it, configWrapper }) => {
-
-
-  describe("Operations and settings", () => {
-
+  describe("Operations and settings tests", () => {
     it(`has correct initial isOperational() value`, async function () {
       // Get operating status
       let status = await configWrapper.config.flightSuretyData.isOperational.call();

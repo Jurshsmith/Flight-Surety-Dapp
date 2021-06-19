@@ -6,7 +6,7 @@ const StartServerPlugin = require('start-server-webpack-plugin')
 module.exports = {
     entry: [
         'webpack/hot/poll?1000',
-        './src/server/index'
+        './../../src/server/index'
     ],
     watch: true,
     target: 'node',
@@ -32,7 +32,7 @@ module.exports = {
         }),
     ],
     output: {
-        path: path.join(__dirname, 'prod/server'),
+        path: path.join(__dirname, '../../prod/server'),
         filename: 'server.js'
     }
 }

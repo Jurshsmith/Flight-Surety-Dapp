@@ -1,6 +1,6 @@
-const Test = require("../../config/testConfig.js");
+const Test = require("../../configs/test/test.config.js");
 
-contract("Flight Surety Tests", async (accounts) => {
+contract("Flight Surety App Tests", async (accounts) => {
   let config;
   let configWrapper = {};
 
@@ -14,7 +14,6 @@ contract("Flight Surety Tests", async (accounts) => {
 
   describe("FlightSuretyApp", () => {
     // Stateful testing
-
     require('./operationAndSettings.spec')({ describe, it, configWrapper });
 
     require('./airlineRegistration.spec')({ describe, it, configWrapper, accounts });

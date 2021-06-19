@@ -1,5 +1,5 @@
-var HDWalletProvider = require("truffle-hdwallet-provider");
-var mnemonic = "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat";
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const mnemonic = "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat";
 
 module.exports = {
   networks: {
