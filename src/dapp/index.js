@@ -4,6 +4,7 @@ import Contract from './contract';
 import './flightsurety.css';
 
 
+
 (async () => {
 
     let result = null;
@@ -18,13 +19,33 @@ import './flightsurety.css';
 
 
         // User-submitted transaction
-        DOM.elid('submit-oracle').addEventListener('click', () => {
-            let flight = DOM.elid('flight-number').value;
+        // DOM.elid('submit-oracle').addEventListener('click', () => {
+        //     let flight = DOM.elid('flight-number').value;
+        //     // Write transaction
+        //     contract.fetchFlightStatus(flight, (error, result) => {
+        //         display('Oracles', 'Trigger oracles', [{ label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp }]);
+        //     });
+        // });
+
+        // Create flight
+        DOM.elid('create-flight').addEventListener('click', async (e) => {
+            const flightName = DOM.elid('flight-name').value;
             // Write transaction
-            contract.fetchFlightStatus(flight, (error, result) => {
-                display('Oracles', 'Trigger oracles', [{ label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp }]);
-            });
-        })
+            console.log({ contract });
+
+            console.log('hexewe', contract.web3.utils.asciiToHex(flightName));
+            console.log('hexewe', contract.web3.utils.fromAscii(flightName));
+
+            const k = await contract.registerFlight(contract.web3.utils.fromAscii(flightName));
+
+            console.log({ k })
+            e.stopPropagation();
+        });
+
+        DOM.elid('participate-airline').addEventListener('click', async () => {
+            const result = await contract.payAirlineSeedFunding();
+            result && alert('Participation successful');
+        });
 
     });
 

@@ -50,6 +50,16 @@ To view dapp:
 `npm run server`
 `truffle test ./test/oracles.js`
 
+# Run Full Dapp And Watch Your Contract and Src/Javascript Changes
+
+### Windows
+
+`npm run dapp:dev:sample1:windows`
+
+### Unix
+
+`npm run dapp:dev:sample1:unix`
+
 ## Deploy
 
 To build dapp for prod:
