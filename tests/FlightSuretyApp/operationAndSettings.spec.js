@@ -1,5 +1,5 @@
 
-module.exports = ({ describe, it, configWrapper }) => {
+module.exports = ({ configWrapper }) => {
   describe("Operations and settings tests", () => {
     it(`has correct initial isOperational() value`, async function () {
       // Get operating status

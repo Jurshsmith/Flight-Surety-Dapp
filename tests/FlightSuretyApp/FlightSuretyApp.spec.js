@@ -14,11 +14,11 @@ contract("Flight Surety App Tests", async (accounts) => {
 
   describe("FlightSuretyApp", () => {
     // Stateful testing
-    require('./operationAndSettings.spec')({ describe, it, configWrapper });
+    require('./operationAndSettings.spec')({ configWrapper });
 
-    require('./airlineRegistration.spec')({ describe, it, configWrapper, accounts });
+    require('./airlineRegistration.spec')({ configWrapper, accounts });
 
-    require('./airlineParticipation.spec')({ describe, it, configWrapper, accounts });
+    require('./airlineParticipation.spec')({ configWrapper, accounts });
 
   });
 });

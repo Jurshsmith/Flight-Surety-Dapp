@@ -2,7 +2,7 @@
 const BigNumber = require("bignumber.js");
 const truffleAssert = require('truffle-assertions');
 
-module.exports = ({ describe, it, configWrapper, accounts }) => describe("Airline Registration", function () {
+module.exports = ({ configWrapper, accounts }) => describe("Airline Registration", function () {
   it("(referral) cannot register an Airline using registerAirline() if it is not funded", async () => {
     // ARRANGE
     let newAirline = accounts[2];
