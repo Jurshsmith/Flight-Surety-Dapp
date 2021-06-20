@@ -1,4 +1,5 @@
 import FlightSuretyApp from '../../build/contracts/FlightSuretyApp.json';
+import FlightSuretyData from '../../build/contracts/FlightSuretyData.json';
 import Config from './config.json';
 import Web3 from 'web3';
 
@@ -8,6 +9,7 @@ export default class Contract {
         let config = Config[network];
         this.web3 = new Web3(new Web3.providers.HttpProvider(config.url));
         this.flightSuretyApp = new this.web3.eth.Contract(FlightSuretyApp.abi, config.appAddress);
+
         this.initialize(callback);
         this.owner = null;
         this.airlines = [];
@@ -20,10 +22,13 @@ export default class Contract {
             console.log(err, events)
         });
 
-        socketInstance.events.Logger({ fromBlock: 0 }, (error, event) => {
+        this.flightSuretyDataSocketInstance = new web3socket.eth.Contract(FlightSuretyData.abi, config.dataAddress);
 
-            console.log({ error, event })
-        })
+        this.flightSuretyDataSocketInstance.events.allEvents({ fromBlock: 0 }, (err, events) => {
+            console.log("Flight surety data");
+            console.log(err, events)
+        });
+
     }
 
     initialize(callback) {
@@ -76,13 +81,14 @@ export default class Contract {
             this.flightSuretyApp.methods
                 .registerFlight(flightName)
                 .send(
-                    { from: this.owner },
+                    { from: this.owner,
+                        gas: 5000000  },
                     (err, res) => {
                         console.log({ err, res })
                         if (err) reject(err);
                         resolve(res);
                     }
-                ).on('Logger', (data, dataa) => console.log({ data, dataa }))
+                )
         });
     }
 

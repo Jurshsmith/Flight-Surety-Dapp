@@ -27,6 +27,12 @@ import './flightsurety.css';
         //     });
         // });
 
+
+        DOM.elid('participate-airline').addEventListener('click', async () => {
+            const result = await contract.payAirlineSeedFunding();
+            result && alert('Participation successful');
+        });
+
         // Create flight
         DOM.elid('create-flight').addEventListener('click', async (e) => {
             const flightName = DOM.elid('flight-name').value;

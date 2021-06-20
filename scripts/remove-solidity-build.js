@@ -22,6 +22,6 @@ const removeDir = function (path) {
   }
 }
 
-const pathToDir = path.join(__dirname, "./build/contracts")
+const pathToDir = path.join(__dirname, "./../build/contracts")
 
 removeDir(pathToDir)
