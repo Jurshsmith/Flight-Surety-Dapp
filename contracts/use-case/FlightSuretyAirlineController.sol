@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.26;
 
 import "./FlightSuretyBaseAppWithAccessControl.sol";
 
@@ -15,9 +15,8 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
         requireIsOperational
         returns (bool)
     {
-        bool requiresReferral =
-            flightSuretyData.registeredAirlinesLength() <
-                MAX_AIRLINES_TO_END_REFERRAL;
+        bool requiresReferral = flightSuretyData.registeredAirlinesLength() <
+            MAX_AIRLINES_TO_END_REFERRAL;
 
         processAirlineRegistration(airlineAddress, requiresReferral);
 
@@ -68,8 +67,8 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             "You cant vote more than once"
         );
 
-        uint256 currentPreRegisteredAirlineVotes =
-            flightSuretyData.getPreRegisteredAirlineNoOfVotes(airlineAddress);
+        uint256 currentPreRegisteredAirlineVotes = flightSuretyData
+        .getPreRegisteredAirlineNoOfVotes(airlineAddress);
 
         currentPreRegisteredAirlineVotes++;
 
@@ -79,8 +78,9 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
             currentPreRegisteredAirlineVotes
         );
 
-        uint256 requiredConsensusVotes =
-            flightSuretyData.registeredAirlinesLength().div(2);
+        uint256 requiredConsensusVotes = flightSuretyData
+        .registeredAirlinesLength()
+        .div(2);
 
         if (currentPreRegisteredAirlineVotes >= requiredConsensusVotes) {
             flightSuretyData.registerAirline(airlineAddress);
@@ -99,5 +99,7 @@ contract FlightSuretyAirlineController is FlightSuretyBaseAppWithAccessControl {
 
         flightSuretyData.updateAirlineSeedFundingAmount(msg.sender, msg.value);
         flightSuretyData.setAirlineParticipationStatus(msg.sender, true);
+
+        emit Logger("Seed funding is paidi");
     }
 }

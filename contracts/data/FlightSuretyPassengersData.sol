@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.26;
 
 import "./FlightSuretyDataAccessControl.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";

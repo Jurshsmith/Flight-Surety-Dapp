@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.26;
 
 import "../data/FlightSuretyData.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
@@ -11,7 +11,7 @@ contract FlightSuretyBaseAppWithAccessControl {
 
     address private contractOwner; // Account used to deploy contract
     bool private operational = true; // Blocks all state changes throughout the contract if false
-    event Logger(string logData);
+    event Logger(bytes32 logData);
 
     /**
      * @dev Contract constructor

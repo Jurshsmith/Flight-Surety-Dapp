@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.26;
 
 import "./FlightSuretyFlightsData.sol";
 import "./FlightSuretyOraclesData.sol";
@@ -11,5 +11,5 @@ contract FlightSuretyData is
     FlightSuretyAirlinesData,
     FlightSuretyPassengersData
 {
-    function () public payable {}  
+    function() public payable {}
 }

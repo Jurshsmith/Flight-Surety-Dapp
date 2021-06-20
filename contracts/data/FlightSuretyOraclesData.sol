@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.26;
 
 import "./FlightSuretyDataAccessControl.sol";
 
@@ -78,8 +78,9 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         requireIsOperational
         requireRegisteredOracle(oracleAddress)
     {
-        bytes32 key =
-            keccak256(abi.encodePacked(index, airline, flight, timestamp));
+        bytes32 key = keccak256(
+            abi.encodePacked(index, airline, flight, timestamp)
+        );
         require(
             oracleResponses[key].isOpen,
             "Flight or timestamp do not match oracle request"

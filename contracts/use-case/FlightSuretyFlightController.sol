@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.26;
 
 import "./FlightSuretyBaseAppWithAccessControl.sol";
 
@@ -68,28 +68,24 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
      * @dev Register a future flight for insuring.
      *
      */
-    function registerFlight(address airlineAddress, bytes32 flight) external {
+    function registerFlight(bytes32 flightName) external {
         require(
             flightSuretyData.getAirlineParticipationStatus(msg.sender),
             "Only Pariticipating Airlines can register a flight"
         );
+        bytes32 flightKey = getFlightKey(msg.sender, flightName, now);
 
-        bytes32 flightKey = getFlightKey(airlineAddress, flight, now);
+        emit Logger(flightKey);
 
         flightSuretyData.registerFlight(
-            airlineAddress,
-            flight,
+            msg.sender,
+            flightName,
             STATUS_CODE_UNKNOWN,
             now,
             flightKey
         );
 
-        emit FlightStatusInfo(
-            airlineAddress,
-            flightKey,
-            now,
-            STATUS_CODE_UNKNOWN
-        );
+        emit FlightStatusInfo(msg.sender, flightKey, now, STATUS_CODE_UNKNOWN);
     }
 
     /**
@@ -117,8 +113,9 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
         uint8 index = getRandomIndex(msg.sender);
 
         // Generate a unique key for storing the request
-        bytes32 oracleResponseKey =
-            keccak256(abi.encodePacked(index, airline, flightKey, timestamp));
+        bytes32 oracleResponseKey = keccak256(
+            abi.encodePacked(index, airline, flightKey, timestamp)
+        );
 
         // add the key of the oracleResponse - for oracles to update that data
         flightSuretyData.createOpeningForOracleResponse(
@@ -168,17 +165,13 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
         uint8 maxValue = 10;
 
         // Pseudo random number...the incrementing nonce adds variation
-        uint8 random =
-            uint8(
-                uint256(
-                    keccak256(
-                        abi.encodePacked(
-                            blockhash(block.number - nonce++),
-                            account
-                        )
-                    )
-                ) % maxValue
-            );
+        uint8 random = uint8(
+            uint256(
+                keccak256(
+                    abi.encodePacked(blockhash(block.number - nonce++), account)
+                )
+            ) % maxValue
+        );
 
         if (nonce > 250) {
             nonce = 0; // Can only fetch blockhashes for last 256 blocks so we adapt
@@ -204,8 +197,9 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
         uint8 statusCode,
         bytes32 oracleKey
     ) external {
-        uint8[3] memory oracleIndexes =
-            flightSuretyData.getOracleIndexes(msg.sender);
+        uint8[3] memory oracleIndexes = flightSuretyData.getOracleIndexes(
+            msg.sender
+        );
 
         require(
             (oracleIndexes[0] == index) ||

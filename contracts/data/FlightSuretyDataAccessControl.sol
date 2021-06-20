@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.26;
 
 contract FlightSuretyDataAccessControl {
     address private contractOwner; // Account used to deploy contract
