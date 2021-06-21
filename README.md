@@ -55,11 +55,11 @@ To view dapp:
 
 ### Windows
 
-`npm run dapp:dev:sample1:windows`
+`npm run dapp:dev:windows`
 
 ### Unix
 
-`npm run dapp:dev:sample1:unix`
+`npm run dapp:dev:unix`
 
 ## Deploy
 

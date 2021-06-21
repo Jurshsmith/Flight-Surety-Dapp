@@ -104,7 +104,7 @@ export default class Contract {
                         if (err) reject(err);
                         resolve(res);
                     }
-                ).on('Logger', (data, dataa) => console.log({ data, dataa }))
+                );
         });
     }
 

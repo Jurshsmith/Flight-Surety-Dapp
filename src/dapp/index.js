@@ -28,9 +28,10 @@ import './flightsurety.css';
         // });
 
 
-        DOM.elid('participate-airline').addEventListener('click', async () => {
+        DOM.elid('participate-airline').addEventListener('click', async (e) => {
             const result = await contract.payAirlineSeedFunding();
             result && alert('Participation successful');
+            e.stopPropagation();
         });
 
         // Create flight
@@ -48,9 +49,22 @@ import './flightsurety.css';
             e.stopPropagation();
         });
 
-        DOM.elid('participate-airline').addEventListener('click', async () => {
-            const result = await contract.payAirlineSeedFunding();
-            result && alert('Participation successful');
+        DOM.elid('fetch-available-flights').addEventListener('click', async (e) => {
+            const response = await fetch('http://localhost:3000/api/flights');
+            const {flights} = await response.json();
+
+            console.log("Available flights are ", flights);
+            DOM.elid('flight-options').innerHTML = '<option value="nil" id="no-option">--No Flight--</option>';
+            flights.forEach((flight, i) => {
+                console.log("New flight ", contract.web3.utils.hexToAscii(flight.flightName))
+                const flightName = contract.web3.utils.hexToAscii(flight.flightName);
+
+                DOM.elid('flight-options').insertAdjacentHTML( 'beforeend', `<option value="${i}">${flightName}</option>`);
+            });
+
+            const transformedFlights = flights.map(flight => contract.web3.utils.hexToAscii(flight.flightName).replaceAll("\u0000", ""));
+            console.log({ transformedFlights });
+
         });
 
     });

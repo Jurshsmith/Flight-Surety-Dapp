@@ -22,6 +22,8 @@ const removeDir = function (path) {
   }
 }
 
-const pathToDir = path.join(__dirname, "./../build/contracts")
+console.log(process.argv);
 
-removeDir(pathToDir)
+const pathToRemove = path.join(__dirname, process?.argv[2])
+
+removeDir(pathToRemove)

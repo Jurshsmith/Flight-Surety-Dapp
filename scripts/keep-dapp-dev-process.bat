@@ -1,4 +1,4 @@
 @echo off
 :label
-cmd /c npm run dapp:dev:sample1
+cmd /c npm run dapp:dev
 goto label

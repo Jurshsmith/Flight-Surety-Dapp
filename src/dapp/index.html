@@ -44,8 +44,10 @@
         <div class="row">
             <label for="flight-options">Flights:</label>
 
+            <btn class="btn btn-primary" id="fetch-available-flights">Fetch Available Flights</btn>
+
             <select style="margin-left: 20px; width: 100px;" placeholder="Flight Options" id="flight-options">
-                <option value="0">null</option>
+                <option value="nil" id="no-option">--No Flight--</option>
             </select>
             <btn style="margin-left: 20px;" class="btn btn-primary" id="submit-picked-flight">Pick Flight</btn>
         </div>

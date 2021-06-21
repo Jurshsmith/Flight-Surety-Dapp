@@ -1,4 +1,4 @@
 # watch.sh
 while true; do
-    npm run dapp:dev:sample1;
+    npm run dapp:dev;
 done;

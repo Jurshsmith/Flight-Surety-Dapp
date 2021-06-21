@@ -34,6 +34,11 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
         uint8 status
     );
 
+    event NewFlight(
+        bytes32 flightName,
+        bytes32 flightKey
+    );
+
     event OracleReport(
         address airline,
         bytes32 flight,
@@ -75,8 +80,6 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
         );
         bytes32 flightKey = getFlightKey(msg.sender, flightName, now);
 
-        emit Logger(flightKey);
-
         flightSuretyData.registerFlight(
             msg.sender,
             flightName,
@@ -85,7 +88,7 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
             flightKey
         );
 
-        emit FlightStatusInfo(msg.sender, flightKey, now, STATUS_CODE_UNKNOWN);
+        emit NewFlight(flightName, flightKey);
     }
 
     /**
