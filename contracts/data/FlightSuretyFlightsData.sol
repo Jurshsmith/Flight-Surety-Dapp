@@ -9,9 +9,10 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
         address airline;
         uint8 statusCode;
         uint256 updatedTimestamp;
+        mapping(address => uint256) passengers; // also tracks the passenger balance based on the address and amount insured
     }
 
-    mapping(bytes32 => FlightModel) flights;
+    mapping(bytes32 => FlightModel) public flights;
 
     /**
      * @dev Register future flights for insuring
@@ -39,5 +40,29 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
         requireIsOperational
     {
         flights[flightKey].statusCode = statusCode;
+    }
+
+    function setAmountInsuredByRegisteredInAFlight(
+        bytes32 flightKey,
+        address passengerAddress,
+        uint256 amountInsured
+    ) external requireAuthorizedAddress requireIsOperational {
+        flights[flightKey].passengers[passengerAddress] = amountInsured;
+    }
+
+    function getFlightStatusCode(bytes32 flightKey)
+        external
+        view
+        requireAuthorizedAddress
+        returns (uint8)
+    {
+        return flights[flightKey].statusCode;
+    }
+
+    function getPassengerBalanceFromThisFlight(
+        bytes32 flightKey,
+        address passengerAddress
+    ) external view requireAuthorizedAddress returns (uint256) {
+        return flights[flightKey].passengers[passengerAddress];
     }
 }

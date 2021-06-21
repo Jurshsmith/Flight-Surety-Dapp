@@ -7,10 +7,10 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
     // Flight status codes
     uint8 private constant STATUS_CODE_UNKNOWN = 0;
     uint8 private constant STATUS_CODE_ON_TIME = 10;
-    uint8 private constant STATUS_CODE_LATE_AIRLINE = 20;
     uint8 private constant STATUS_CODE_LATE_WEATHER = 30;
     uint8 private constant STATUS_CODE_LATE_TECHNICAL = 40;
     uint8 private constant STATUS_CODE_LATE_OTHER = 50;
+    uint8 private constant STATUS_CODE_DONE = 60;
 
     // Fee to be paid when registering oracle
     uint256 public constant ORACLE_REGISTRATION_FEE = 1 ether;
@@ -36,7 +36,8 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
 
     event NewFlight(
         bytes32 flightName,
-        bytes32 flightKey
+        bytes32 flightKey,
+        uint8 status
     );
 
     event OracleReport(
@@ -88,7 +89,7 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
             flightKey
         );
 
-        emit NewFlight(flightName, flightKey);
+        emit NewFlight(flightName, flightKey, STATUS_CODE_UNKNOWN);
     }
 
     /**
@@ -235,6 +236,9 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
 
             // Handle flight status as appropriate
             processFlightStatus(airline, flightKey, timestamp, statusCode);
+
+            flightSuretyData.setOracleResponseIsOpen(oracleKey, false);
+
         }
     }
 }

@@ -103,6 +103,14 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         return oracleResponses[oracleKey].isOpen;
     }
 
+    function setOracleResponseIsOpen(bytes32 oracleKey, bool isOpen)
+        external
+        requireIsOperational
+        requireAuthorizedAddress
+    {
+        oracleResponses[oracleKey].isOpen = isOpen;
+    }
+
     function updateOracleResponsesStatusCode(
         bytes32 oracleKey,
         uint8 statusCode,
