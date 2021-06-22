@@ -57,7 +57,6 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         external
         requireAuthorizedAddress
         requireIsOperational
-        requireRegisteredOracle(oracleAddress)
     {
         oracleResponses[oracleResponseKey] = ResponseInfo({
             requester: oracleAddress,

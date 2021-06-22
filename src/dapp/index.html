@@ -30,6 +30,7 @@
             <btn class="btn btn-primary" id="participate-airline">Participate</btn>
         </div>
         <br />
+        <br />
         <div class="row">
             <p>Airline to submit flight</p> <br />
         </div>
@@ -37,33 +38,57 @@
             <label class="form" for="flight-name">Flight Name:</label> <input type="text" id="flight-name">
             <btn class="btn btn-primary" id="create-flight">Create Flight</btn>
         </div>
+        <br />
+        <br />
+
 
         <div class="row top-20">
             <p>Passenger to pick a flight</p> <br />
         </div>
-        <div>
-            <label for="flight-options">Flights:</label>
 
+        <div class="row">
             <btn class="btn btn-primary" id="fetch-available-flights">Fetch Available Flights</btn>
-            <br />
-            <select style="margin-left: 20px; width: 100px;" placeholder="Flight Options" id="flight-options">
+        </div> <br />
+        <div class="row">
+            <label for="flight-options">Flights:</label>
+            <select style="margin-left: 20px; width: 130px;height: 44px;" placeholder="Flight Options"
+                id="flight-options">
                 <option value="nil" id="no-option">--No Flight--</option>
             </select>
+        </div> <br />
 
-            <div class="row">
-                <input type="number" placeholder="You can insure up to 1 ETH" id="passenger-flight-insurance-value">
-                <btn style="margin-left: 20px;" class="btn btn-primary" id="submit-picked-flight">Insure Flight</btn>
-            </div>
-           
+
+        <div class="row">
+            <input type="number" step="0.01" style="width: 240px; padding-left: 14px;"
+                placeholder="You can insure up to 1 ETH" id="passenger-flight-value-to-insure">
+            <btn style="margin-left: 20px;" class="btn btn-primary" id="submit-picked-flight">Insure Flight</btn>
         </div>
+
+        </div>
+        <br />
+        <br />
 
         <div class="row top-20">
             <p>Passenger/Anyone to check flight status</p> <br />
         </div>
-        <div class="row">
-            <label class="form" for="flight-status-field">Flight</label> <input type="text" id="flight-status-field">
-            <btn class="btn btn-primary" id="fetch-flight-status">Fetch flight status</btn>
+        <div>
+            <div class="row">
+                <label for="flight-key-options">Pick Flight:</label>
+                <select style="margin-left: 20px; width: 130px;height: 44px;" placeholder="Flight Options"
+                    id="flight-key-options">
+                    <option value="nil" id="no-option">--No Flight--</option>
+                </select>
+            </div> <br />
+            <div class="row">
+                <btn class="btn btn-primary" id="fetch-flight-status">Fetch flight status</btn>
+            </div>
+            <div class="row">
+                <i>(keep trying to fetch till you get an alert of the response)</i>
+            </div>
         </div>
+        </div>
+        <br />
+        <br />
 
         <div class="row top-20">
             <p>Passenger to check their balance</p> <br />
@@ -71,6 +96,8 @@
         <div class="row">
             <btn class="btn btn-primary" id="check-balance">Check Balance</btn>
         </div>
+        <br />
+        <br />
 
         <div class="row top-20">
             <p>Passenger to withdraw their balance</p> <br />
@@ -78,6 +105,9 @@
         <div class="row">
             <btn class="btn btn-primary" id="cash-out">Cash out</btn>
         </div>
+        <br />
+        <br />
+
     </main>
 
 </body>

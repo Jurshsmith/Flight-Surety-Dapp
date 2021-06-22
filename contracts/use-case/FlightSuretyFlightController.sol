@@ -110,12 +110,15 @@ contract FlightSuretyFlightController is FlightSuretyBaseAppWithAccessControl {
 
     // Generate a request for oracles to fetch flight information
     function fetchFlightStatus(
-        address airline,
         bytes32 flightKey,
         uint256 timestamp
-    ) external {
+    ) external requireIsOperational {
         uint8 index = getRandomIndex(msg.sender);
 
+        address airline = flightSuretyData.getAirlineThatCreatedFlight(flightKey);
+
+        require(flightSuretyData.getFlightStatusCode(flightKey) >= 0, "Not a valid Flight");
+        
         // Generate a unique key for storing the request
         bytes32 oracleResponseKey = keccak256(
             abi.encodePacked(index, airline, flightKey, timestamp)

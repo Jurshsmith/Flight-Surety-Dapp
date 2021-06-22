@@ -65,4 +65,13 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
     ) external view requireAuthorizedAddress returns (uint256) {
         return flights[flightKey].passengers[passengerAddress];
     }
+
+    function getAirlineThatCreatedFlight(bytes32 flightKey)
+        external
+        view
+        requireAuthorizedAddress
+        returns (address)
+    {
+        return flights[flightKey].airline;
+    }
 }

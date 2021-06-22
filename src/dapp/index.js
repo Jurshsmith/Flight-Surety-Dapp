@@ -2,75 +2,111 @@
 import DOM from './dom';
 import Contract from './contract';
 import './flightsurety.css';
+import { FlightStatusQueueMap } from './shared';
 
 
+const heap = {};
 
-(async () => {
+const contract = new Contract('localhost', () => {
+    // Read transaction
+    contract.isOperational((error, result) => {
+        console.log(error, result);
+        display('Operational Status', 'Check if contract is operational', [{ label: 'Operational Status', error: error, value: result }]);
+    });
 
-    let result = null;
 
-    let contract = new Contract('localhost', () => {
+    DOM.elid('participate-airline').addEventListener('click', async (e) => {
+        const result = await contract.payAirlineSeedFunding().catch(_e => alert(_e));
+        result && alert('Participation successful');
+        e.stopPropagation();
+    });
 
-        // Read transaction
-        contract.isOperational((error, result) => {
-            console.log(error, result);
-            display('Operational Status', 'Check if contract is operational', [{ label: 'Operational Status', error: error, value: result }]);
+    // Create flight
+    DOM.elid('create-flight').addEventListener('click', async (e) => {
+        const flightName = DOM.elid('flight-name').value;
+        // Write transaction
+        try {
+            await contract.registerFlight(contract.web3.utils.fromAscii(flightName));
+            alert("Flight Registration is Successful");
+        }
+        catch (_e) {
+            alert(_e);
+        }
+    });
+
+    const _populateSelectElementWithFlights = (selectElement, flights) => {
+        selectElement.innerHTML = '<option value="nil" id="no-option">--No Flight--</option>';
+        flights.forEach((flight, i) => {
+            const flightName = contract.web3.utils.hexToAscii(flight.flightName);
+
+            selectElement.insertAdjacentHTML('beforeend', `<option value="${i}">${flightName}</option>`);
         });
+    }
 
+    DOM.elid('fetch-available-flights').addEventListener('click', async () => {
+        const response = await fetch('http://localhost:3000/api/flights');
+        const { flights } = await response.json();
 
-        // User-submitted transaction
-        // DOM.elid('submit-oracle').addEventListener('click', () => {
-        //     let flight = DOM.elid('flight-number').value;
-        //     // Write transaction
-        //     contract.fetchFlightStatus(flight, (error, result) => {
-        //         display('Oracles', 'Trigger oracles', [{ label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp }]);
-        //     });
-        // });
+        console.log("Available flights are ", flights);
+        heap.flights = flights;
 
+        _populateSelectElementWithFlights(DOM.elid('flight-options'), flights);
+        _populateSelectElementWithFlights(DOM.elid('flight-key-options'), flights);
 
-        DOM.elid('participate-airline').addEventListener('click', async (e) => {
-            const result = await contract.payAirlineSeedFunding();
-            result && alert('Participation successful');
-            e.stopPropagation();
-        });
+    });
 
-        // Create flight
-        DOM.elid('create-flight').addEventListener('click', async (e) => {
-            const flightName = DOM.elid('flight-name').value;
-            // Write transaction
-            console.log({ contract });
+    DOM.elid('flight-options').addEventListener('change', async (e) => {
+        heap.selectedFlight = heap.flights?.[e.target.value];
 
-            console.log('hexewe', contract.web3.utils.asciiToHex(flightName));
-            console.log('hexewe', contract.web3.utils.fromAscii(flightName));
+        console.log({ selectedFlight: heap.selectedFlight });
+    });
 
-            const k = await contract.registerFlight(contract.web3.utils.fromAscii(flightName));
+    DOM.elid('flight-key-options').addEventListener('change', async (e) => {
+        heap.selectedFlightKey = heap.flights?.[e.target.value];
 
-            console.log({ k })
-            e.stopPropagation();
-        });
+        console.log({ selectedFlightKey: heap.selectedFlightKey });
+    });
 
-        DOM.elid('fetch-available-flights').addEventListener('click', async (e) => {
-            const response = await fetch('http://localhost:3000/api/flights');
-            const {flights} = await response.json();
+    DOM.elid('submit-picked-flight').addEventListener('click', async () => {
+        try {
+            if (heap?.selectedFlight) {
+                const valueToInsure = DOM.elid('passenger-flight-value-to-insure').value;
+                const response = await contract.insureFlightForPassenger(heap?.selectedFlight?.flightKey, valueToInsure);
 
-            console.log("Available flights are ", flights);
-            DOM.elid('flight-options').innerHTML = '<option value="nil" id="no-option">--No Flight--</option>';
-            flights.forEach((flight, i) => {
-                console.log("New flight ", contract.web3.utils.hexToAscii(flight.flightName))
-                const flightName = contract.web3.utils.hexToAscii(flight.flightName);
+                if (response?.length > 0) {
+                    alert("You have successfully insured your flight");
+                }
+            } else {
+                alert("You have to pick a flight");
+            }
 
-                DOM.elid('flight-options').insertAdjacentHTML( 'beforeend', `<option value="${i}">${flightName}</option>`);
-            });
-
-            const transformedFlights = flights.map(flight => contract.web3.utils.hexToAscii(flight.flightName).replaceAll("\u0000", ""));
-            console.log({ transformedFlights });
-
-        });
+        } catch (e) {
+            alert(e);
+        }
 
     });
 
 
-})();
+    DOM.elid('fetch-flight-status').addEventListener('click', async () => {
+
+        if (heap?.selectedFlightKey) {
+            // Write transaction
+            let error;
+            await contract.fetchFlightStatus(heap?.selectedFlightKey?.flightKey).catch(e => {
+                alert(e);
+                error = e;
+            });
+
+            FlightStatusQueueMap[heap?.selectedFlightKey?.flightKey] = true;          
+
+        } else {
+            alert("You have to pick a flight");
+        }
+    });
+
+
+});
+
 
 
 function display(title, description, results) {
@@ -86,10 +122,3 @@ function display(title, description, results) {
     })
     displayDiv.append(section);
 }
-
-
-
-
-
-
-

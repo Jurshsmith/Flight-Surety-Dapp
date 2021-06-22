@@ -38,7 +38,7 @@ module.exports = ({ configWrapper, accounts }) => describe("Airline Registration
 
     (await Promise.allSettled(
       this.testAccounts
-        .map((newAirline, i) =>
+        .flatMap((newAirline, i) =>
           [
             configWrapper.config.flightSuretyApp.registerAirline(newAirline, {
               from: this.testAccounts?.[i - 1] || configWrapper.config.firstAirline,
@@ -52,7 +52,7 @@ module.exports = ({ configWrapper, accounts }) => describe("Airline Registration
     ));
 
 
-    const newAirlinesRegistered = (await Promise.all(
+    const newAirlinesRegistered = (await Promise.allSettled(
       this.testAccounts.map(newAirline => configWrapper.config.flightSuretyData.getRegisteredAirlineIsRegistered.call(
         newAirline
       ))
