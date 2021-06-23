@@ -1,5 +1,4 @@
 import FlightSuretyApp from '../../build/contracts/FlightSuretyApp.json';
-import FlightSuretyData from '../../build/contracts/FlightSuretyData.json';
 import Config from './config.json';
 import Web3 from 'web3';
 import { FlightStatusQueueMap, StatusMap } from './shared';
@@ -15,26 +14,15 @@ export default class Contract {
         this.airlines = [];
         this.passengers = [];
 
-        // this.web3.eth.subscribe('logs', {}, (err, log) => console.log({ err, log }));
         this.web3socket = new Web3(new Web3.providers.WebsocketProvider(this.config.wsUrl));
         const socketInstance = new this.web3socket.eth.Contract(FlightSuretyApp.abi, this.config.appAddress);
         socketInstance.events.allEvents({ fromBlock: 0 }, (err, event) => {
             console.log(err, event)
             if (event?.event === "FlightStatusInfo" && FlightStatusQueueMap?.[event?.returnValues?.flight]) {
-                console.log("Status", event?.returnValues?.status);
                 alert("Your Flight Status: " + StatusMap[event?.returnValues?.status]);
                 delete FlightStatusQueueMap?.[event?.returnValues?.flight];
             }
         });
-
-        this.flightSuretyDataSocketInstance = new this.web3socket.eth.Contract(FlightSuretyData.abi, this.config.dataAddress);
-
-        this.flightSuretyDataSocketInstance.events.allEvents({ fromBlock: 0 }, (err, event) => {
-            console.log("Flight surety data");
-            console.log(err, event);
-        });
-
-        // this.flightSuretyDataSocketInstance.events.FlightStatusInfo()
 
     }
 
@@ -52,8 +40,6 @@ export default class Contract {
             while (this.passengers.length < 5) {
                 this.passengers.push(accts[counter++]);
             }
-
-            console.log(this.flightSuretyApp);
 
             callback();
         });
@@ -86,7 +72,6 @@ export default class Contract {
 
     registerFlight(flightName) {
         return new Promise((resolve, reject) => {
-            console.log({ ownerStuff: this.owner })
             this.flightSuretyApp.methods
                 .registerFlight(flightName)
                 .send(
@@ -105,7 +90,6 @@ export default class Contract {
 
     insureFlightForPassenger(flightKey, value) {
         return new Promise((resolve, reject) => {
-            console.log({ ownerStuff: this.owner })
             this.flightSuretyApp.methods
                 .buyInsurance(flightKey)
                 .send(
@@ -149,7 +133,6 @@ export default class Contract {
 
     withdrawFromBalance(amount) {
         return new Promise((resolve, reject) => {
-            console.log({ amountToWidraw: this.web3.utils.toWei(`${amount}`, 'ether') })
             this.flightSuretyApp.methods
                 .withdrawFromBalance(this.web3.utils.toWei(`${amount}`, 'ether'))
                 .send({ from: this.owner, gas: 5000000, }, (err, res) => {

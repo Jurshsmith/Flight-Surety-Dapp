@@ -22,8 +22,6 @@ const removeDir = function (path) {
   }
 }
 
-console.log(process.argv);
-
 const pathToRemove = path.join(__dirname, process?.argv[2])
 
 removeDir(pathToRemove)

@@ -9,8 +9,6 @@ export const processOracleRegistration = async (flightSuretyApp) => {
 
       const oracleRegistrationFee = await flightSuretyApp.methods.ORACLE_REGISTRATION_FEE().call();
 
-      console.log({ oracleRegistrationFee })
-
       heap.oracles = (await Promise.all(
         accountsForOracleSimulation.map(oracleAccountAddress =>
           (async () => {
@@ -29,12 +27,9 @@ export const processOracleRegistration = async (flightSuretyApp) => {
         )
       ));
 
-      console.log({ oracles: heap.oracles });
-
       heap.hasRegisteredServerOracleAccounts = true;
     }
   } catch (e) {
-    console.log({ daError: e });
     console.log("An error occurred processing oracle registration");
   }
 }
@@ -52,7 +47,6 @@ export const simulateOracleDataSubmission = async (event, flightSuretyApp) => {
 
 
   const _determineOraclesWithRequiredEventIndex = async () => {
-    console.log({ index })
     heap.oraclesWithAtLeastOneCurrentEventIndex = heap.oracles.filter(({ indexes }) => indexes.includes(index));
   }
 
@@ -79,7 +73,6 @@ export const simulateOracleDataSubmission = async (event, flightSuretyApp) => {
       );
 
     } catch (e) {
-      console.log({ e })
       console.log("Oracle wasn't accepted")
     };
 

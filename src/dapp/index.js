@@ -47,7 +47,6 @@ const contract = new Contract('localhost', () => {
         const response = await fetch('http://localhost:3000/api/flights');
         const { flights } = await response.json();
 
-        console.log("Available flights are ", flights);
         heap.flights = flights;
 
         _populateSelectElementWithFlights(DOM.elid('flight-options'), flights);
@@ -57,14 +56,10 @@ const contract = new Contract('localhost', () => {
 
     DOM.elid('flight-options').addEventListener('change', async (e) => {
         heap.selectedFlight = heap.flights?.[e.target.value];
-
-        console.log({ selectedFlight: heap.selectedFlight });
     });
 
     DOM.elid('flight-key-options').addEventListener('change', async (e) => {
         heap.selectedFlightKey = heap.flights?.[e.target.value];
-
-        console.log({ selectedFlightKey: heap.selectedFlightKey });
     });
 
     DOM.elid('submit-picked-flight').addEventListener('click', async () => {
@@ -118,11 +113,8 @@ const contract = new Contract('localhost', () => {
     DOM.elid('cash-out').addEventListener('click', async () => {
         const cashOutValue = DOM.elid('cash-out-value').value;
 
-        console.log({ cashOutValue });
-
         try {
             const response = await contract.withdrawFromBalance(cashOutValue);
-            console.log({ response, cashOutValue });
             alert("Payout successful");
         }
         catch (_e) {
