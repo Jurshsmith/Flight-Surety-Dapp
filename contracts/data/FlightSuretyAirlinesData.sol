@@ -24,29 +24,6 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
     mapping(address => PreRegisteredAirline) preRegisteredAirlines;
     uint256 public preRegisteredAirlinesLength = 0;
 
-    /**
-     * @dev Add an airline to the registration queue
-     *      Can only be called from FlightSuretyApp contract
-     *
-     */
-    function registerAirline(address airlineAddress)
-        external
-        requireAuthorizedAddress
-        requireIsOperational
-    {
-        registeredAirlines[airlineAddress] = RegisteredAirline(0, true, false);
-        registeredAirlinesLength++;
-    }
-
-    function preRegisterAirline(address airlineAddress)
-        external
-        requireAuthorizedAddress
-        requireIsOperational
-    {
-        preRegisteredAirlines[airlineAddress] = PreRegisteredAirline(0, true);
-        preRegisteredAirlinesLength++;
-    }
-
     modifier requireAirlineIsRegistered(address airlineAddress) {
         require(
             registeredAirlines[airlineAddress].isRegistered,
@@ -63,6 +40,39 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         _;
     }
 
+    /**
+     * @dev Add an airline to the registration queue
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
+    function registerAirline(address airlineAddress)
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+    {
+        registeredAirlines[airlineAddress] = RegisteredAirline(0, true, false);
+        registeredAirlinesLength++;
+    }
+
+    /**
+     * @dev Add an airline to the pre-registration queue
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
+    function preRegisterAirline(address airlineAddress)
+        external
+        requireAuthorizedAddress
+        requireIsOperational
+    {
+        preRegisteredAirlines[airlineAddress] = PreRegisteredAirline(0, true);
+        preRegisteredAirlinesLength++;
+    }
+
+    /**
+     * @dev get if airline is registered
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function getRegisteredAirlineIsRegistered(address airlineAddress)
         external
         view
@@ -72,6 +82,11 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         return registeredAirlines[airlineAddress].isRegistered;
     }
 
+     /**
+     * @dev get if airline is participating
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function getRegisteredAirlineIsParticipating(address airlineAddress)
         external
         view
@@ -81,6 +96,11 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         return registeredAirlines[airlineAddress].isParticipating;
     }
 
+     /**
+     * @dev get if airline is pre-registered
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function getPreRegisteredAirlineIsPreRegistered(address airlineAddress)
         external
         view
@@ -90,6 +110,11 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         return preRegisteredAirlines[airlineAddress].isPreRegistered;
     }
 
+     /**
+     * @dev get if airline participation status
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function getAirlineParticipationStatus(address airlineAddress)
         external
         view
@@ -99,6 +124,11 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         return registeredAirlines[airlineAddress].isParticipating;
     }
 
+     /**
+     * @dev set if airline participation status
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function setAirlineParticipationStatus(
         address airlineAddress,
         bool isParticipating
@@ -125,6 +155,11 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         .seedFundingAmount += seedFundingAmount;
     }
 
+     /**
+     * @dev get pre-registered airline no of votes
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function getPreRegisteredAirlineNoOfVotes(address airlineAddress)
         external
         view
@@ -134,6 +169,11 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         return preRegisteredAirlines[airlineAddress].voteCount;
     }
 
+     /**
+     * @dev set pre-registered airline no of votes
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function setPreRegisteredAirlineNoOfVotes(
         address airlineAddress,
         uint256 votes
@@ -146,6 +186,12 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         preRegisteredAirlines[airlineAddress].voteCount = votes;
     }
 
+
+     /**
+     * @dev set registered airline vote
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function setRegisteredAirlineVote(
         address preRegisteredAirlineAddress,
         address registeredAirlineAddress,
@@ -163,6 +209,11 @@ contract FlightSuretyAirlinesData is FlightSuretyDataAccessControl {
         preRegisteredAirlines[preRegisteredAirlineAddress].voteCount = votes;
     }
 
+     /**
+     * @dev get if airline has registered airline vote
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function getHasRegisteredAirlineVote(
         address preRegisteredAirlineAddress,
         address registeredAirlineAddress
