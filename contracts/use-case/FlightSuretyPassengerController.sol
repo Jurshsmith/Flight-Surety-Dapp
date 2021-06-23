@@ -8,8 +8,8 @@ contract FlightSuretyPassengerController is
     FlightSuretyBaseAppWithAccessControl
 {
     using SafeMath for uint256;
-     uint8 private constant STATUS_CODE_LATE_AIRLINE = 20;
-     uint8 private constant PASSENGER_GAINS_DIVISOR = 2;
+    uint8 private constant STATUS_CODE_LATE_AIRLINE = 20;
+    uint8 private constant PASSENGER_GAINS_DIVISOR = 2;
 
     struct Passenger {
         mapping(bytes32 => uint256) flights; // flightKey -> amountPaidToInsure
@@ -56,42 +56,59 @@ contract FlightSuretyPassengerController is
         emit NewPassenger(msg.sender, msg.value, flightKey);
     }
 
+    event Withdrawal(uint256 balance, uint256 amount);
+
     /**
      * @dev Check balance for passenger
-     *
+     * Use .call() in web3 to read functions like this
      */
-    function checkMyBalance(bytes32 flightKey)
+    function checkMyBalance()
         external
         requireIsOperational
         requireIsPassenger
+        returns (uint256)
+    {
+        return evaluatePassengerBalance();
+    }
+
+    function evaluatePassengerBalance()
+        internal
+        requireIsOperational
         returns (uint256)
     {
         // evaluate all the flights of a passenger and evaluate balance
         bytes32[] memory flights = flightSuretyData.getPassengerFlights(
             msg.sender
         );
+
         // create an isEvaluated flag for Passenger to avoid DDOS
         for (uint256 i = 0; i < flights.length; i++) {
-            if (flightSuretyData.getFlightStatusCode(flightKey) == STATUS_CODE_LATE_AIRLINE) {
+            if (
+                flightSuretyData.getFlightStatusCode(flights[i]) ==
+                STATUS_CODE_LATE_AIRLINE
+            ) {
                 // fund passenger wallet 1.5 the amount insure since it was delayed
                 uint256 amountToFundPassenger = flightSuretyData
-                .getPassengerBalanceFromThisFlight(flightKey, msg.sender);
+                .getPassengerBalanceFromThisFlight(flights[i], msg.sender);
 
                 flightSuretyData.fundPassengerWallet(
                     msg.sender,
-                    amountToFundPassenger + amountToFundPassenger.div(PASSENGER_GAINS_DIVISOR)
+                    amountToFundPassenger +
+                        amountToFundPassenger.div(PASSENGER_GAINS_DIVISOR)
                 );
 
                 // set flight passenger wallet to zero
                 flightSuretyData.setAmountInsuredByRegisteredInAFlight(
-                    flightKey,
+                    flights[i],
                     msg.sender,
                     0
                 );
             }
         }
 
-        return flightSuretyData.getPassengerBalance(msg.sender);
+        uint256 balance = flightSuretyData.getPassengerBalance(msg.sender);
+
+        return balance;
     }
 
     function withdrawFromBalance(uint256 amount)
@@ -99,17 +116,22 @@ contract FlightSuretyPassengerController is
         requireIsOperational
         requireIsPassenger
     {
+        evaluatePassengerBalance(); // Actual State Change Transaction
         uint256 passengerBalance = flightSuretyData.getPassengerBalance(
             msg.sender
         );
+        emit Withdrawal(amount, passengerBalance);
+
         require(
-            passengerBalance >= amount,
+            amount <= passengerBalance,
             "You don't have this amount of funds to withdraw"
         );
+      
+        flightSuretyData.payPassenger(msg.sender, amount);
+
         flightSuretyData.setPassengerBalance(
             msg.sender,
             passengerBalance.sub(amount)
         );
-        flightSuretyData.payPassenger(msg.sender, amount);
     }
 }

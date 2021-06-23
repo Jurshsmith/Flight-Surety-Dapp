@@ -97,12 +97,39 @@ const contract = new Contract('localhost', () => {
                 error = e;
             });
 
-            FlightStatusQueueMap[heap?.selectedFlightKey?.flightKey] = true;          
+            FlightStatusQueueMap[heap?.selectedFlightKey?.flightKey] = true;
 
         } else {
             alert("You have to pick a flight");
         }
     });
+
+    DOM.elid('check-balance').addEventListener('click', async () => {
+        try {
+            const balance = await contract.checkMyBalance();
+            console.log({ balance })
+            alert(`Your balance is ${balance} ETH`);
+        }
+        catch (_e) {
+            alert(_e);
+        }
+    });
+
+    DOM.elid('cash-out').addEventListener('click', async () => {
+        const cashOutValue = DOM.elid('cash-out-value').value;
+
+        console.log({ cashOutValue });
+
+        try {
+            const response = await contract.withdrawFromBalance(cashOutValue);
+            console.log({ response, cashOutValue });
+            alert("Payout successful");
+        }
+        catch (_e) {
+            alert(_e);
+        }
+    });
+
 
 
 });

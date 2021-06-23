@@ -4,7 +4,7 @@ contract FlightSuretyDataAccessControl {
     address private contractOwner; // Account used to deploy contract
     mapping(address => bool) private authorizedAddresses; // Used to determine who can CRUD the persistance layer of the DApp
     bool private operational = true; // Blocks all state changes throughout the contract if false
-    event Logger(string logData);
+    event Logger(uint logData);
 
     /**
      * @dev Constructor

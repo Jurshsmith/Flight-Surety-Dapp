@@ -78,7 +78,11 @@
                     id="flight-key-options">
                     <option value="nil" id="no-option">--No Flight--</option>
                 </select>
-            </div> <br />
+            </div> 
+            <div class="row">
+                <i>(You will need to fetch available flights ^ before seeing some flight options)</i>
+            </div>
+            <br />
             <div class="row">
                 <btn class="btn btn-primary" id="fetch-flight-status">Fetch flight status</btn>
             </div>
@@ -96,11 +100,17 @@
         <div class="row">
             <btn class="btn btn-primary" id="check-balance">Check Balance</btn>
         </div>
+        <div class="row">
+            <i>(You will need to fetch flight status before seeing your accurate balance)</i>
+        </div>
         <br />
         <br />
 
         <div class="row top-20">
             <p>Passenger to withdraw their balance</p> <br />
+        </div>
+        <div class="row">
+            <input type="text" placeholder="Withdrawal amount" id="cash-out-value" step="0.01">
         </div>
         <div class="row">
             <btn class="btn btn-primary" id="cash-out">Cash out</btn>

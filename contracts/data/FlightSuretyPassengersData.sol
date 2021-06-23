@@ -7,12 +7,13 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
     struct Passenger {
         bytes32[] flights; // flightKeys in array data structure since flights per passenger tends to be significantly lesser than actual number of registered flights
         uint256 balance;
+        bool isRegistered;
     }
 
     mapping(address => Passenger) passengers;
 
     modifier requireIsPassenger(address passengerAddress) {
-        require(passengers[passengerAddress].balance >= 0);
+        require(passengers[passengerAddress].isRegistered);
         _;
     }
 
@@ -20,10 +21,9 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
         external
         view
         requireAuthorizedAddress
-        requireIsPassenger(passengerAddress)
         returns (bool)
     {
-        return true;
+        return passengers[passengerAddress].isRegistered;
     }
 
     /**
@@ -36,7 +36,7 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
         requireIsOperational
         requireAuthorizedAddress
     {
-        passengers[passengerAddress] = Passenger(new bytes32[](0), 0);
+        passengers[passengerAddress] = Passenger(new bytes32[](0), 0, true);
     }
 
     function updatePassengerFlightInsurance(
@@ -71,12 +71,12 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
      */
     function getPassengerBalance(address passengerAddress)
         external
-        view
         requireIsOperational
         requireAuthorizedAddress
         requireIsPassenger(passengerAddress)
         returns (uint256)
     {
+        emit Logger(passengers[passengerAddress].balance);
         return passengers[passengerAddress].balance;
     }
 
@@ -99,7 +99,8 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
         requireIsOperational
         requireAuthorizedAddress
     {
-        passengers[passengerAddress].balance = amount;
+        emit Logger(amount);
+        passengers[passengerAddress].balance += amount;
     }
 
     /**
@@ -112,7 +113,7 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
         requireAuthorizedAddress
     {
         uint256 passengerBalance = passengers[passengerAddress].balance;
-        require(passengerBalance >= amount, "Insufficient funds");
+        require(amount <= passengerBalance, "Insufficient funds");
 
         passengerAddress.transfer(amount);
     }

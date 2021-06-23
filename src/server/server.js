@@ -1,6 +1,6 @@
 
 import express from 'express';
-import { simulateOracleDataSubmission } from './simulate-oracle-data-submission';
+import { simulateOracleDataSubmission, processOracleRegistration } from './simulate-oracle-data-submission';
 import { flightSuretyApp } from './flightSuretyAppContract.server';
 
 const flights = [];
@@ -29,6 +29,10 @@ flightSuretyApp.events.NewFlight({
       }
     );
 });
+
+(async () => {
+  await processOracleRegistration(flightSuretyApp);
+})();
 
 const app = express();
 

@@ -127,7 +127,7 @@ export default class Contract {
         return new Promise((resolve, reject) => {
             this.flightSuretyApp.methods
                 .fetchFlightStatus(flightKey, Math.floor(Date.now() / 1000))
-                .send({ from: this.owner }, (err, res) => {
+                .send({ from: this.owner, gas: 5000000, }, (err, res) => {
                     console.log({ err, res })
                     if (err) reject(err);
                     resolve(res);
@@ -135,6 +135,28 @@ export default class Contract {
         });
     }
 
+    checkMyBalance() {
+        return new Promise((resolve, reject) => {
+            this.flightSuretyApp.methods
+                .checkMyBalance()
+                .call({ from: this.owner, gas: 5000000, }, (err, balance) => {
+                    console.log({ err, balance })
+                    if (err) reject(err);
+                    resolve(this.web3.utils.fromWei(`${balance}`, 'ether'));
+                })
+        });
+    }
 
-
+    withdrawFromBalance(amount) {
+        return new Promise((resolve, reject) => {
+            console.log({ amountToWidraw: this.web3.utils.toWei(`${amount}`, 'ether') })
+            this.flightSuretyApp.methods
+                .withdrawFromBalance(this.web3.utils.toWei(`${amount}`, 'ether'))
+                .send({ from: this.owner, gas: 5000000, }, (err, res) => {
+                    console.log({ err, res })
+                    if (err) reject(err);
+                    resolve(res);
+                })
+        });
+    }
 }
