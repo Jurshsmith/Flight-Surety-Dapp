@@ -32,41 +32,16 @@ To install, download or clone the repo, then:
 ## Develop Client
 
 To run truffle tests:
-
 App: `npm run test:contracts:app`
-App and watch for changes from test specs and contracts: `npm run test:contracts:app:watch`
-Data(oracle): `npm run test:contracts:data`
 
-To use the dapp:
 
-`truffle migrate`
-`npm run dapp`
-
-To view dapp:
-
-`http://localhost:8000`
-
-## Develop Server
-
-`npm run server`
-`truffle test ./test/oracles.js`
-
-# Run Full Dapp And Watch Your Contract and Src/Javascript Changes
-
+# How to run Full App End to End on Your Local
 ### Windows
-
 `npm run dapp:dev:windows`
 
 ### Unix
-
 `npm run dapp:dev:unix`
 
-## Deploy
-
-To build dapp for prod:
-`npm run dapp:prod`
-
-Deploy the contents of the ./dapp folder
 
 ## Resources
 
