@@ -34,6 +34,11 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
         });
     }
 
+    /**
+     * @dev Set Flight status
+     *      
+     *
+     */
     function setFlightStatus(bytes32 flightKey, uint8 statusCode)
         external
         requireAuthorizedAddress
@@ -42,6 +47,11 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
         flights[flightKey].statusCode = statusCode;
     }
 
+    /**
+     * @dev Set amount insured by flight from flights mapping
+     *      
+     *
+     */
     function setAmountInsuredByRegisteredInAFlight(
         bytes32 flightKey,
         address passengerAddress,
@@ -50,6 +60,11 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
         flights[flightKey].passengers[passengerAddress] = amountInsured;
     }
 
+    /**
+     * @dev Get flight status code from flights mapping
+     *      
+     *
+     */
     function getFlightStatusCode(bytes32 flightKey)
         external
         view
@@ -59,6 +74,10 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
         return flights[flightKey].statusCode;
     }
 
+    /**
+     * @dev get passengerBalance per flight
+     *
+     */
     function getPassengerBalanceFromThisFlight(
         bytes32 flightKey,
         address passengerAddress
@@ -66,6 +85,10 @@ contract FlightSuretyFlightsData is FlightSuretyDataAccessControl {
         return flights[flightKey].passengers[passengerAddress];
     }
 
+    /**
+     * @dev Get airline that created flight
+     *
+     */
     function getAirlineThatCreatedFlight(bytes32 flightKey)
         external
         view

@@ -39,6 +39,10 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
         passengers[passengerAddress] = Passenger(new bytes32[](0), 0, true);
     }
 
+    /**
+     * @dev update passenger flight status data
+     *
+     */
     function updatePassengerFlightInsurance(
         address passengerAddress,
         bytes32 flightKey
@@ -67,7 +71,7 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
     }
 
     /**
-     *  @dev Get passenger's flights
+     *  @dev Get passenger's balance
      */
     function getPassengerBalance(address passengerAddress)
         external
@@ -79,6 +83,11 @@ contract FlightSuretyPassengersData is FlightSuretyDataAccessControl {
         emit Logger(passengers[passengerAddress].balance);
         return passengers[passengerAddress].balance;
     }
+
+    /**
+     * @dev Set passengers balance
+     *
+     */
 
     function setPassengerBalance(address passengerAddress, uint256 amount)
         external

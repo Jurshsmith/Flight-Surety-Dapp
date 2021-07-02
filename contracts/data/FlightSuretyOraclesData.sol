@@ -41,6 +41,12 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         _;
     }
 
+    /**
+     * @dev Get the oracle indexes called from the app contract
+     *      this indexes were initially assigned on the registration of 
+     *      the oracle
+     *
+     */
     function getOracleIndexes(address oracleAddress)
         external
         view
@@ -50,6 +56,10 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         return oracles[oracleAddress].indexes;
     }
 
+    /**
+     * @dev Registration of an oracle.
+     *
+     */
     function createOpeningForOracleResponse(
         bytes32 oracleResponseKey,
         address oracleAddress
@@ -64,6 +74,10 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         });
     }
 
+    /**
+     * @dev update the oracleResponses mapping 
+     *
+     */
     function addOracleResponse(
         address oracleAddress,
         uint8 index,
@@ -87,6 +101,10 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         oracleResponses[key].responses[statusCode].push(oracleAddress);
     }
 
+    /**
+     * @dev get number of oracle responses per mapping
+     *
+     */
     function getOracleNumberOfResponses(bytes32 key, uint8 statusCode)
         external
         view
@@ -94,6 +112,12 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         oracleResponses[key].responses[statusCode].length;
     }
 
+    /**
+     * @dev Get if oracle response is open. 
+     * i.e. that oracle is still accepting responses
+     *
+     */
+    
     function getIfOracleResponseIsOpen(bytes32 oracleKey)
         external
         view
@@ -102,6 +126,11 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         return oracleResponses[oracleKey].isOpen;
     }
 
+    /**
+     * @dev Set if oracle response is open. 
+     * i.e. this will determine if the oracle is still accepting responses
+     *
+     */
     function setOracleResponseIsOpen(bytes32 oracleKey, bool isOpen)
         external
         requireIsOperational
@@ -110,6 +139,10 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         oracleResponses[oracleKey].isOpen = isOpen;
     }
 
+     /**
+     * @dev Update oracles responses status code
+     *
+     */
     function updateOracleResponsesStatusCode(
         bytes32 oracleKey,
         uint8 statusCode,
@@ -118,6 +151,11 @@ contract FlightSuretyOraclesData is FlightSuretyDataAccessControl {
         oracleResponses[oracleKey].responses[statusCode].push(oracleAddress);
     }
 
+     /**
+     * @dev Get total number of responses for a given status code
+     *      In an oracleResponse
+     *
+     */
     function getTotalNumberOfResponsesForThisStatusCode(
         bytes32 oracleKey,
         uint8 statusCode
